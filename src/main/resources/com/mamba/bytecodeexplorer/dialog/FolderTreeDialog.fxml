@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<fx:root minHeight="10.0" minWidth="10.0" prefHeight="410.0" prefWidth="829.0" type="HBox" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="20.0" spacing="3.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#openFolder" prefHeight="25.0" prefWidth="57.0">
+               <graphic>
+                  <FontIcon iconLiteral="mdal-folder_open" />
+               </graphic>
+            </Button>
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="57.0">
+               <graphic>
+                  <FontIcon iconLiteral="mdmz-refresh" />
+               </graphic>
+            </Button>
+         </children>
+         <padding>
+            <Insets right="3.0" />
+         </padding>
+      </VBox>
+      <SplitPane dividerPositions="0.2135678391959799" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="10.0" minWidth="10.0" prefHeight="400.0" prefWidth="600.0" HBox.hgrow="ALWAYS">
+         <items>
+            <ListView fx:id="folderListView" minHeight="10.0" prefHeight="200.0" prefWidth="200.0" SplitPane.resizableWithParent="false" />
+            <SplitPane dividerPositions="0.47351524879614765" minHeight="10.0" minWidth="0.0">
+               <items>
+                  <VBox>
+                     <children>
+                        <TreeView fx:id="folderExploreTreeView" maxHeight="1.7976931348623157E308" minHeight="10.0" minWidth="0.0" VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="214.0" spacing="5.0">
+                           <children>
+                              <Button fx:id="partialFolderTransferButton" mnemonicParsing="false" text="&gt;&gt;" />
+                              <Label fx:id="partialFolderLabel" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="176.0" text="None" HBox.hgrow="ALWAYS">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdal-folder_open" />
+                                 </graphic></Label>
+                           </children>
+                           <padding>
+                              <Insets top="3.0" />
+                           </padding>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="398.0" prefWidth="351.0" spacing="3.0">
+                     <children>
+                        <TreeView fx:id="folderSelectedTreeView" minHeight="10.0" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </TreeView>
+                        <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="3.0">
+                           <children>
+                              <Button fx:id="clearSelectedFolderButton" mnemonicParsing="false">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdoal-delete_sweep" />
+                                 </graphic>
+                              </Button>
+                              <Separator orientation="VERTICAL" prefHeight="25.0" prefWidth="0.0" />
+                              <Label text="Parent" />
+                              <ComboBox fx:id="parentComboBox" prefHeight="25.0" prefWidth="175.0" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </items>
+            </SplitPane>
+         </items>
+      </SplitPane>
+   </children>
+   <padding>
+      <Insets bottom="5.0" top="5.0" />
+   </padding>
+</fx:root>

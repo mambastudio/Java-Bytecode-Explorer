@@ -1,0 +1,72 @@
+/* variables.css */
+.root {
+    /* Circular Button Variables */        
+    -circular-hover-bg: rgba(0, 0, 0, 0.05);
+    -circular-hover-border: rgba(0, 0, 0, 0.2);
+    -circular-pressed-bg: rgba(0, 0, 0, 0.1);
+    -circular-close-icon-fill: black;
+    -circular-close-icon-size: 20px;
+    
+    /**/
+    -modal-pane-background-color: -color-bg-default;
+    -modal-pane-border-color: -color-border-default;    
+}
+
+.modal .glass{
+    -fx-background-color: rgba(255,255,255,0.15);
+}
+
+.modal .pane{
+    -fx-background-color: -modal-pane-background-color;
+    -fx-border-color: -modal-pane-border-color;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5;
+    -fx-background-radius: 10;
+    /*-fx-effect: dropshadow(gaussian, derive(-fx-box-border, 5%), 12, 0.5, 1, 1);*/
+}
+
+.modal .tile .header {
+    -fx-font-weight: bold;
+    -fx-font-size: 18px; /* or whatever size you prefer */    
+}
+
+.modal .tile .description {    
+    -fx-text-fill: derive(-color-fg-default, -30%);
+}
+
+.modal .tile .header-help {    
+    -fx-icon-size: 60px;           /* Ikonli-specific – preferred */
+}
+
+.modal .tile .circular-button {
+    -fx-background-radius: 100%;
+    -fx-border-radius: 100%;
+    -fx-min-width: 15px;
+    -fx-min-height: 15px;
+    -fx-padding: 0;
+    -fx-alignment: center;
+
+    /* Base state: clean and invisible */
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+
+    /* Remove focus ring */
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;    
+}
+
+.modal .tile .circular-button:hover {
+    -fx-background-color: -circular-hover-bg; /* light hover background */
+    -fx-border-color: -circular-hover-border;      /* visible border */
+    -fx-border-radius: 100%;
+    -fx-background-radius: 100%;
+}
+
+.modal .tile .circular-button:pressed {
+    -fx-background-color: -circular-pressed-bg;    
+}
+
+.modal .tile .circular-button .close-icon {
+    -fx-icon-size: -circular-close-icon-size;
+    -fx-fill: -circular-close-icon-fill;
+}
