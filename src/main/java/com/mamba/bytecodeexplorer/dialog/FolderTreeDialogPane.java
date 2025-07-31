@@ -114,13 +114,9 @@ public class FolderTreeDialogPane extends HBox {
             };
         });
         
-        folderListView.getSelectionModel().selectedItemProperty().addListener((o, ov, nv)->{
-            if(nv != null){
-                Platform.runLater(()->{
-                    setFolderExplore(nv);
-                });
-                
-            }
+        folderListView.getSelectionModel().selectedItemProperty().addListener((o, ov, nv)->{            
+            if(Optional.<FileRef>ofNullable(nv).isPresent())
+                Platform.runLater(()->setFolderExplore(nv));
         });
         
         /****Folder explore treeview section****/
@@ -177,7 +173,7 @@ public class FolderTreeDialogPane extends HBox {
     public void openFolder(ActionEvent e){        
         File selectedDirectory = directoryChooser.showDialog(this.sceneProperty().get().getWindow());
         
-        if(selectedDirectory != null && selectedDirectory.isDirectory()){
+        if(selectedDirectory.isDirectory()){
             if(!folderListView.getItems().contains(new FileRef(selectedDirectory)))
                 folderListView.getItems().add(new FileRef(selectedDirectory));
         }
