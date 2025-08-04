@@ -1,5 +1,6 @@
 package com.mamba.bytecodeexplorer.watcher.treeitem;
 
+import com.mamba.bytecodeexplorer.RecursiveTreeModel;
 import com.mamba.bytecodeexplorer.watcher.FileExtensions;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
 import java.nio.file.Path;
@@ -7,7 +8,7 @@ import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class FileRefModel {
+public class FileRefModel implements RecursiveTreeModel<FileRef, FileRefModel> {
 
     private final FileRef ref;
     private final FileExtensions extensionsHolder;
@@ -35,6 +36,7 @@ public class FileRefModel {
         return ref;
     }
 
+    @Override
     public ObservableList<FileRefModel> getChildren() {
         if (ref == null) return FXCollections.emptyObservableList();
 

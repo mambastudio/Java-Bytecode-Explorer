@@ -4,6 +4,7 @@
  */
 package com.mamba.bytecodeexplorer.watcher.treeitem;
 
+import com.mamba.bytecodeexplorer.RecursiveTreeModel;
 import com.mamba.bytecodeexplorer.watcher.FileExtensions;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
 import java.util.Objects;
@@ -14,7 +15,7 @@ import javafx.collections.ObservableList;
  *
  * @author user
  */
-public class FileRefInfo {
+public class FileRefInfo implements RecursiveTreeModel<FileRef, FileRefInfo>{
     private final FileRef fileRef;
     private final ObservableList<FileRefInfo> children = FXCollections.observableArrayList();
     private final FileExtensions extensions;
@@ -29,20 +30,24 @@ public class FileRefInfo {
         this.fileRef = ref;
         this.name = fileRef.name();
     }
+    
+    public FileRef getFileRef(){
+        return fileRef;
+    }
      
-    public void reloadChildren(){
+    public void reloadSystemChildren(){
         if(fileRef.exists() && fileRef.isDirectory()){
             FileRef[] childrenFileRef = fileRef.children(extensions);
             children.clear();
             for(FileRef ref : childrenFileRef){
-                children.add(new FileRefInfo(ref));
+                if(ref.isLeaf())
+                    children.add(new FileRefInfo(ref));
             }
         }
     }
     
     public void setName(FileRef ref){
-        Objects.requireNonNull(ref);
-        
+        Objects.requireNonNull(ref);        
         switch(ref){
             case FileRef r when r.isAncestorOf(fileRef) -> name = fileRef.name();
             case FileRef r when r.isDescendantOf(fileRef) -> throw new UnsupportedOperationException("Changing file name requires the name to be from a file that is an ancestor");
@@ -65,5 +70,18 @@ public class FileRefInfo {
     @Override
     public String toString(){
         return name;
+    }
+
+    @Override
+    public ObservableList<FileRefInfo> getChildren() {
+        return children;
+    }
+    
+    public void clearChildren(){
+        children.clear();
+    }
+    
+    public void addChildren(FileRefInfo fileRefInfo){
+        children.add(fileRefInfo);
     }
 }

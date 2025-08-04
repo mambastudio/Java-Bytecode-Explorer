@@ -4,10 +4,16 @@
  */
 package com.mamba.bytecodeexplorer;
 
-import java.io.IO;
+import com.mamba.bytecodeexplorer.utility.ListChangeCase;
+import com.mamba.bytecodeexplorer.utility.ListChangeCase.AddRemoveCase;
+import com.mamba.bytecodeexplorer.utility.ListChangeCase.Kind;
+import com.mamba.bytecodeexplorer.utility.ListChangeCase.PermutationCase;
+import com.mamba.bytecodeexplorer.utility.ListChangeCase.UpdateCase;
+import com.mamba.bytecodeexplorer.utility.ListChangeUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
@@ -62,27 +68,31 @@ public class RecursiveTreeItem<T> extends TreeItem<T> {
         children.forEach(child -> {            
             super.getChildren().add(new RecursiveTreeItem<>(child, graphicsFactory, childrenFactory));            
         });
+       
+        children.addListener(ListChangeUtils.asListener(change -> {
+            switch(change){             
+                case AddRemoveCase (Change<? extends T> c, Kind k) -> {
+                    switch(k){
+                        case ADDED ->{
+                            c.getAddedSubList().forEach(t ->{
+                                this.getChildren().add(new RecursiveTreeItem<>(t, graphicsFactory, childrenFactory));
+                            });
+                        }
+                        case REMOVED ->{
+                            c.getRemoved().forEach(t -> {
+                                var itemsToRemove = this
+                                    .getChildren()
+                                    .stream()
+                                    .filter(treeItem -> treeItem.getValue().equals(t))
+                                    .collect(Collectors.toList());
 
-        children.addListener((ListChangeListener<T>) change -> {
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    change.getAddedSubList().forEach(t ->{
-                        RecursiveTreeItem.this.getChildren().add(new RecursiveTreeItem<>(t, graphicsFactory, childrenFactory));
-                    });
+                                this.getChildren().removeAll(itemsToRemove);
+                            });
+                        }
+                    }
                 }
-
-                if (change.wasRemoved()) {
-                    change.getRemoved().forEach(t -> {
-                        final List<TreeItem<T>> itemsToRemove = RecursiveTreeItem.this
-                            .getChildren()
-                            .stream()
-                            .filter(treeItem -> treeItem.getValue().equals(t))
-                            .collect(Collectors.toList());
-
-                        RecursiveTreeItem.this.getChildren().removeAll(itemsToRemove);
-                    });
-                }
+                default -> {}
             }
-        });
+        }));
     }
 }
