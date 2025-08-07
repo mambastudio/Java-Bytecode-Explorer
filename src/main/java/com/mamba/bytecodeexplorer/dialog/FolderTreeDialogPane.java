@@ -28,6 +28,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -59,11 +60,11 @@ public class FolderTreeDialogPane extends HBox {
     @FXML
     TreeView<FileRefInfo> folderSelectedTreeView;
     private final ObjectProperty<FileRef> folderSelectedProperty = new SimpleObjectProperty();
-    private final ObjectProperty<FileRefInfo> folderRefInfoProperty = new SimpleObjectProperty();
     
     @FXML
     ComboBox<FileRef> parentComboBox;
-    
+    TreeItem<FileRefInfo> folderInfoRootItem = new TreeItem<>();    
+   
     Callback<FileRefModel, Node> graphicsFactoryFileRefModel = (FileRefModel fileRef) -> {
         StackedFontIcon fontIcon = new StackedFontIcon();            
         if(fileRef.getRef().isDirectory() && fileRef.getRef().isDirectoryEmpty(".class")){
@@ -166,7 +167,7 @@ public class FolderTreeDialogPane extends HBox {
         
         /****Folder selected section****/
         clearSelectedFolderButton.setOnAction(e -> folderSelectedProperty.set(null));        
-        folderSelectedProperty.addListener((o, ov, nv) -> {
+        folderSelectedProperty.addListener((_, _, nv) -> {
             var f = Optional.<FileRef>ofNullable(nv);       
             switch(f.isPresent()){
                 case true -> {
@@ -187,9 +188,9 @@ public class FolderTreeDialogPane extends HBox {
                     var fileInfoTreeModel = TreeItemModel.<FileRefInfo, FileRefInfoTreeItem>of(new FileRefInfo(f.get(), ".class"),
                             m -> new FileRefInfoTreeItem(m, graphicsFactoryFileRefInfo, FileRefInfo::getChildren));
                     fileInfoTreeModel.setExpanded(true);
-                    fileInfoTreeModel.setExpanded(true);
                     
-                    TreeItem<FileRefInfo> folderInfoRootItem = new TreeItem<>(new FileRefInfo(f.get()));
+                    //Setup the treeview
+                    folderInfoRootItem.setValue(new FileRefInfo(f.get()));
                     folderInfoRootItem.setExpanded(true);
                     folderSelectedTreeView.setRoot(folderInfoRootItem);
                     folderInfoRootItem.getChildren().setAll(fileInfoTreeModel.rootTreeItem());
@@ -197,6 +198,15 @@ public class FolderTreeDialogPane extends HBox {
                     
                 }
                 case false -> parentComboBox.getItems().clear();
+            }
+        });
+        FontIcon folderInfoRootIcon = new FontIcon("mdal-extension");
+        folderInfoRootIcon.setFill(Color.GREEN);
+        folderInfoRootItem.setGraphic(folderInfoRootIcon);
+        parentComboBox.getSelectionModel().selectedItemProperty().addListener((_, _, nv)->{
+            var f = Optional.<FileRef>ofNullable(nv);       
+            if(f.isPresent()){
+                folderInfoRootItem.setValue(new FileRefInfo(f.get()));
             }
         });
     }

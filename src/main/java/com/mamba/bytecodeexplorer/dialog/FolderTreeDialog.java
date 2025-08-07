@@ -13,7 +13,7 @@ import javafx.scene.control.ButtonBar;
  *
  * @author user
  */
-public class FolderTreeDialog extends ModalDialog<FileRef> {
+public class FolderTreeDialog extends ModalDialog<FolderTreePair> {
     
     public FolderTreeDialog() {
         super((handle, dialog) -> {
