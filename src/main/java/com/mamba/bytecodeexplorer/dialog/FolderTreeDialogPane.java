@@ -201,7 +201,9 @@ public class FolderTreeDialogPane extends HBox {
             }
         });
         FontIcon folderInfoRootIcon = new FontIcon("mdal-extension");
-        folderInfoRootIcon.setFill(Color.GREEN);
+        folderInfoRootIcon.getStyleClass().clear();
+        folderInfoRootIcon.setIconColor(Color.LIGHTGREEN);
+        folderInfoRootIcon.setIconSize(20);
         folderInfoRootItem.setGraphic(folderInfoRootIcon);
         parentComboBox.getSelectionModel().selectedItemProperty().addListener((_, _, nv)->{
             var f = Optional.<FileRef>ofNullable(nv);       
