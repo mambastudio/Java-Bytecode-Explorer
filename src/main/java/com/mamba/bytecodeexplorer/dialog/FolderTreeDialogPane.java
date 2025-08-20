@@ -37,8 +37,9 @@ import org.kordamp.ikonli.javafx.StackedFontIcon;
 /**
  *
  * @author user
+ * @param <FolderTreePair>
  */
-public class FolderTreeDialogPane extends HBox {        
+public class FolderTreeDialogPane<FolderTreePair> extends HBox {        
     private final DirectoryChooser directoryChooser = new DirectoryChooser();   
     
     @FXML
@@ -197,7 +198,7 @@ public class FolderTreeDialogPane extends HBox {
                     fileInfoTreeModel.rootModel().reloadSystemChildren();
                     
                 }
-                case false -> parentComboBox.getItems().clear();
+                case false -> clearSelectedFolderInfo();
             }
         });
         FontIcon folderInfoRootIcon = new FontIcon("mdal-extension");
@@ -228,5 +229,11 @@ public class FolderTreeDialogPane extends HBox {
         fileTreeModel.setExpanded(true);
         folderExploreRootItem.getChildren().setAll(fileTreeModel.rootTreeItem());  
         folderExploreRootProperty.set(folder);
+    }
+    
+    public void clearSelectedFolderInfo(){
+        parentComboBox.getItems().clear();
+        folderInfoRootItem.setValue(null);
+        folderInfoRootItem.getChildren().clear();
     }
 }
