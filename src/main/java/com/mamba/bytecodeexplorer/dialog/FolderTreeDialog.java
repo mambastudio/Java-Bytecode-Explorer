@@ -19,9 +19,11 @@ public class FolderTreeDialog extends ModalDialog<FolderTreePair> {
         super((handle, dialog) -> {
             var header = new Tile("Folder Monitor Load");
             
+            var content = new FolderTreeDialogPane();
+            
             var ok = new javafx.scene.control.Button("OK");
             var cancel = new javafx.scene.control.Button("Cancel");
-            ok.setOnAction(e -> handle.submit(null));
+            ok.setOnAction(e -> handle.submit(content.getSelectedFolderTreePair()));
             cancel.setOnAction(e -> handle.cancel());
             
             var buttonBar = new ButtonBar();
@@ -29,8 +31,6 @@ public class FolderTreeDialog extends ModalDialog<FolderTreePair> {
             ButtonBar.setButtonData(cancel, ButtonBar.ButtonData.NO);
             buttonBar.getButtons().addAll(ok, cancel);
             
-            var content = new FolderTreeDialogPane();
-
             dialog.setDialogSize(1000, 650);
             
             handle.setHeader(header);

@@ -11,6 +11,7 @@ import com.mamba.bytecodeexplorer.watcher.FileRef;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefInfo;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefInfoTreeItem;
 import java.io.File;
+import java.io.IO;
 import java.io.IOException;
 import java.util.Optional;
 import javafx.beans.property.ObjectProperty;
@@ -37,9 +38,8 @@ import org.kordamp.ikonli.javafx.StackedFontIcon;
 /**
  *
  * @author user
- * @param <FolderTreePair>
  */
-public class FolderTreeDialogPane<FolderTreePair> extends HBox {        
+public class FolderTreeDialogPane extends HBox {        
     private final DirectoryChooser directoryChooser = new DirectoryChooser();   
     
     @FXML
@@ -64,7 +64,9 @@ public class FolderTreeDialogPane<FolderTreePair> extends HBox {
     
     @FXML
     ComboBox<FileRef> parentComboBox;
-    TreeItem<FileRefInfo> folderInfoRootItem = new TreeItem<>();    
+    TreeItem<FileRefInfo> folderInfoRootItem = new TreeItem<>(); 
+    
+    ObjectProperty<FolderTreePair> folderSelected = new SimpleObjectProperty();
    
     Callback<FileRefModel, Node> graphicsFactoryFileRefModel = (FileRefModel fileRef) -> {
         StackedFontIcon fontIcon = new StackedFontIcon();            
@@ -196,6 +198,8 @@ public class FolderTreeDialogPane<FolderTreePair> extends HBox {
                     folderSelectedTreeView.setRoot(folderInfoRootItem);
                     folderInfoRootItem.getChildren().setAll(fileInfoTreeModel.rootTreeItem());
                     fileInfoTreeModel.rootModel().reloadSystemChildren();
+                    //Set selected folder
+                    folderSelected.set(new FolderTreePair(f.get(), f.get()));
                     
                 }
                 case false -> clearSelectedFolderInfo();
@@ -209,7 +213,10 @@ public class FolderTreeDialogPane<FolderTreePair> extends HBox {
         parentComboBox.getSelectionModel().selectedItemProperty().addListener((_, _, nv)->{
             var f = Optional.<FileRef>ofNullable(nv);       
             if(f.isPresent()){
-                folderInfoRootItem.setValue(new FileRefInfo(f.get()));
+                folderInfoRootItem.setValue(new FileRefInfo(f.get()));    
+                IO.println(folderSelected.get());
+                folderSelected.set(new FolderTreePair(f.get(), null));
+                
             }
         });
     }
@@ -235,5 +242,9 @@ public class FolderTreeDialogPane<FolderTreePair> extends HBox {
         parentComboBox.getItems().clear();
         folderInfoRootItem.setValue(null);
         folderInfoRootItem.getChildren().clear();
+    }
+    
+    public FolderTreePair getSelectedFolderTreePair(){
+        return folderSelected.get();
     }
 }

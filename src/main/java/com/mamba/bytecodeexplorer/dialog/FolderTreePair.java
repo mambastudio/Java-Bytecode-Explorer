@@ -15,4 +15,5 @@ public record FolderTreePair(FileRef parentFolder, FileRef descendantFolder, Fil
     public FolderTreePair(FileRef parentFolder, FileRef descendantFolder){
         this(parentFolder, descendantFolder, new FileExtensions(".class"));
     }
+    
 }
