@@ -13,6 +13,7 @@ import com.mamba.bytecodeexplorer.watcher.FileRef;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcher;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcherListener;
 import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
+import java.io.IO;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Application;
@@ -159,7 +160,7 @@ public class JavaBytecodeExplorerController implements Initializable {
     
     public void open(ActionEvent e){
         folderTreeDialog.showAndWait(result -> {               
-                
+            IO.print(result.get());
         });  
         
     }

@@ -65,8 +65,6 @@ public class FolderTreeDialogPane extends HBox {
     @FXML
     ComboBox<FileRef> parentComboBox;
     TreeItem<FileRefInfo> folderInfoRootItem = new TreeItem<>(); 
-    
-    ObjectProperty<FolderTreePair> folderSelected = new SimpleObjectProperty();
    
     Callback<FileRefModel, Node> graphicsFactoryFileRefModel = (FileRefModel fileRef) -> {
         StackedFontIcon fontIcon = new StackedFontIcon();            
@@ -197,10 +195,7 @@ public class FolderTreeDialogPane extends HBox {
                     folderInfoRootItem.setExpanded(true);
                     folderSelectedTreeView.setRoot(folderInfoRootItem);
                     folderInfoRootItem.getChildren().setAll(fileInfoTreeModel.rootTreeItem());
-                    fileInfoTreeModel.rootModel().reloadSystemChildren();
-                    //Set selected folder
-                    folderSelected.set(new FolderTreePair(f.get(), f.get()));
-                    
+                    fileInfoTreeModel.rootModel().reloadSystemChildren();                  
                 }
                 case false -> clearSelectedFolderInfo();
             }
@@ -214,9 +209,6 @@ public class FolderTreeDialogPane extends HBox {
             var f = Optional.<FileRef>ofNullable(nv);       
             if(f.isPresent()){
                 folderInfoRootItem.setValue(new FileRefInfo(f.get()));    
-                IO.println(folderSelected.get());
-                folderSelected.set(new FolderTreePair(f.get(), null));
-                
             }
         });
     }
@@ -244,7 +236,12 @@ public class FolderTreeDialogPane extends HBox {
         folderInfoRootItem.getChildren().clear();
     }
     
-    public FolderTreePair getSelectedFolderTreePair(){
-        return folderSelected.get();
+    public Optional<FolderTreePair> getSelectedFolderTreePair(){
+        return switch(folderInfoRootItem.valueProperty().isNotNull().get()){
+            case true -> Optional.of(new FolderTreePair(
+                                folderInfoRootItem.getValue().getFileRef(), 
+                                folderInfoRootItem.getChildren().get(0).getValue().getFileRef()));
+            case false -> Optional.empty();
+        };
     }
 }

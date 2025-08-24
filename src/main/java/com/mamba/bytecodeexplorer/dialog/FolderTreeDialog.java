@@ -23,7 +23,7 @@ public class FolderTreeDialog extends ModalDialog<FolderTreePair> {
             
             var ok = new javafx.scene.control.Button("OK");
             var cancel = new javafx.scene.control.Button("Cancel");
-            ok.setOnAction(e -> handle.submit(content.getSelectedFolderTreePair()));
+            ok.setOnAction(e -> handle.submit(content.getSelectedFolderTreePair().orElse(null)));
             cancel.setOnAction(e -> handle.cancel());
             
             var buttonBar = new ButtonBar();
