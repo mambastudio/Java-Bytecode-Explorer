@@ -160,7 +160,7 @@ public class JavaBytecodeExplorerController implements Initializable {
     
     public void open(ActionEvent e){
         folderTreeDialog.showAndWait(result -> {               
-            IO.print(result.get());
+            result.ifPresentOrElse(r -> IO.println(r), () -> IO.println("No result"));
         });  
         
     }

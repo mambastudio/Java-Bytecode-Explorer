@@ -11,7 +11,6 @@ import com.mamba.bytecodeexplorer.watcher.FileRef;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefInfo;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefInfoTreeItem;
 import java.io.File;
-import java.io.IO;
 import java.io.IOException;
 import java.util.Optional;
 import javafx.beans.property.ObjectProperty;
@@ -214,12 +213,13 @@ public class FolderTreeDialogPane extends HBox {
     }
     
     public void openFolder(ActionEvent e){        
-        File selectedDirectory = directoryChooser.showDialog(this.sceneProperty().get().getWindow());
+        var selectedDirectory = Optional.ofNullable(directoryChooser.showDialog(this.sceneProperty().get().getWindow()));
         
-        if(selectedDirectory.isDirectory()){
-            if(!folderListView.getItems().contains(new FileRef(selectedDirectory)))
-                folderListView.getItems().add(new FileRef(selectedDirectory));
-        }
+        if(selectedDirectory.isPresent())
+            if(selectedDirectory.get().isDirectory() && selectedDirectory.get() instanceof File f){
+                if(!folderListView.getItems().contains(new FileRef(f)))
+                    folderListView.getItems().add(new FileRef(f));
+            }
     }
     
     private void setFolderExplore(FileRef folder){        

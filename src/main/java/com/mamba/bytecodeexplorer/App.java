@@ -28,10 +28,12 @@ public class App extends Application {
         
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("mambaui-atlanta-theme.css").toExternalForm());
-        
+        System.out.println(" Sdfsf " +scene.getRoot().getStyle());
         stage.setTitle("Java Bytecode Explorer");
         stage.setScene(scene);
         stage.show();
+        
+        
         
     }
     

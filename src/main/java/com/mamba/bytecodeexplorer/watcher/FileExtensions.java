@@ -4,6 +4,8 @@
  */
 package com.mamba.bytecodeexplorer.watcher;
 
+import java.util.Arrays;
+
 /**
  *
  * @author user
@@ -19,5 +21,10 @@ public record FileExtensions(String... extensions) {
     }
     public boolean hasExtensions() {
             return extensions.length > 0;
+    }
+    
+    @Override
+    public String toString(){
+        return Arrays.toString(extensions);
     }
 }

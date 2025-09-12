@@ -4,7 +4,7 @@
  */
 package com.mamba.bytecodeexplorer.dialog;
 
-import com.mamba.bytecodeexplorer.watcher.FileRef;
+import com.mamba.mambaui.MambauiUtility;
 import com.mamba.mambaui.control.Tile;
 import com.mamba.mambaui.modal.ModalDialog;
 import javafx.scene.control.ButtonBar;
@@ -18,6 +18,10 @@ public class FolderTreeDialog extends ModalDialog<FolderTreePair> {
     public FolderTreeDialog() {
         super((handle, dialog) -> {
             var header = new Tile("Folder Monitor Load");
+            
+            var closeBtn = MambauiUtility.buttonIcon("mdal-close", 30, "circular-button", "close-icon");
+            closeBtn.setOnAction(e -> handle.cancel());
+            header.setRight(closeBtn);            
             
             var content = new FolderTreeDialogPane();
             

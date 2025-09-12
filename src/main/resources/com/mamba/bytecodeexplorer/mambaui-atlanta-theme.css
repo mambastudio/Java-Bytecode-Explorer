@@ -1,9 +1,9 @@
 /* variables.css */
-.root {
+.modal {
     /* Circular Button Variables */        
-    -circular-hover-bg: rgba(0, 0, 0, 0.05);
+    -circular-hover-bg: tomato;
     -circular-hover-border: rgba(0, 0, 0, 0.2);
-    -circular-pressed-bg: rgba(0, 0, 0, 0.1);
+    -circular-pressed-bg: steelblue;
     -circular-close-icon-fill: black;
     -circular-close-icon-size: 20px;
     

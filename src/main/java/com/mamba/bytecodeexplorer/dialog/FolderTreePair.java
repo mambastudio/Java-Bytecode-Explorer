@@ -11,9 +11,9 @@ import com.mamba.bytecodeexplorer.watcher.FileRef;
  *
  * @author user
  */
-public record FolderTreePair(FileRef parentFolder, FileRef descendantFolder, FileExtensions extensions) {
-    public FolderTreePair(FileRef parentFolder, FileRef descendantFolder){
-        this(parentFolder, descendantFolder, new FileExtensions(".class"));
+public record FolderTreePair(FileRef ancestorFolder, FileRef parentFolder, FileExtensions extensions) {
+    public FolderTreePair(FileRef ancestorFolder, FileRef parentFolder){
+        this(ancestorFolder, parentFolder, new FileExtensions(".class"));
     }
     
 }
