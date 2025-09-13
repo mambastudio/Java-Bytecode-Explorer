@@ -8,6 +8,7 @@ com\mamba\bytecodeexplorer\watcher\FileRef$ExploreType.class
 com\mamba\bytecodeexplorer\utility\ListChangeCase.class
 com\mamba\bytecodeexplorer\RecursiveTreeItem$1.class
 com\mamba\bytecodeexplorer\watcher\DelayedDirectoryScanner.class
+com\mamba\bytecodeexplorer\watcher\FileRefTree.class
 com\mamba\bytecodeexplorer\watcher\treeitem\FileRefInfoTreeItem.class
 com\mamba\bytecodeexplorer\App.class
 com\mamba\bytecodeexplorer\RecursiveTreeModel.class
@@ -18,6 +19,7 @@ com\mamba\bytecodeexplorer\SampleString.class
 com\mamba\bytecodeexplorer\JavaBytecodeExplorerController.class
 com\mamba\bytecodeexplorer\JavaBytecodeExplorerController$1.class
 com\mamba\bytecodeexplorer\utility\ListChangeCase$ReplacedCase.class
+com\mamba\bytecodeexplorer\watcher\treeitem\FileRefTreeItem2.class
 com\mamba\bytecodeexplorer\watcher\FileExtensions.class
 com\mamba\bytecodeexplorer\utility\ListChangeCase$AddRemoveCase.class
 com\mamba\bytecodeexplorer\dialog\FolderTreeDialogPane$1.class

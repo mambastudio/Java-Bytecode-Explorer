@@ -57,8 +57,26 @@ public class FileRefWatcher {
         }));
     }
     
-    //Set this in constructor
     public final void setMonitor(FileRef root){ 
+        try {
+            if(this.watcher != null) {
+                this.watcher.close(); // safely close any existing watcher               
+            }
+            
+            this.watcher = FileSystems.getDefault().newWatchService();
+            //close existing key if any
+            keys.keySet().forEach(key -> {
+                key.cancel();
+            });
+            keys.clear();
+            //register new keys
+            this.walkAndRegisterDirectories(root);
+        } catch (IOException ex) {
+            Logger.getLogger(FileRefWatcher.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public final void setMonitor(FileRefTree root){ 
         try {
             if(this.watcher != null) {
                 this.watcher.close(); // safely close any existing watcher               
@@ -99,6 +117,28 @@ public class FileRefWatcher {
             Logger.getLogger(FileRefWatcher.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    private void walkAndRegisterDirectories(FileRefTree rootTree) {
+        FileRef ref = rootTree.ref();
+        if (ref == null || ref.isLeaf()) {
+            return;
+        }
+
+        try {
+            // Register this directory
+            if (ref.isDirectory()) {
+                registerDirectory(ref);
+            }
+
+            // Recurse into logical children
+            for (FileRefTree child : rootTree.children()) {
+                walkAndRegisterDirectories(child);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(FileRefWatcher.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     
     public void processEvents(){             
         Thread thread = new Thread(()->{

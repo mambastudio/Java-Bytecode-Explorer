@@ -73,7 +73,7 @@ public class FileRefInfo implements RecursiveTreeModel<FileRef, FileRefInfo>{
     }
 
     @Override
-    public ObservableList<FileRefInfo> getChildren() {
+    public ObservableList<FileRefInfo> children() {
         return children;
     }
     

@@ -67,15 +67,15 @@ public class FolderTreeDialogPane extends HBox {
    
     Callback<FileRefModel, Node> graphicsFactoryFileRefModel = (FileRefModel fileRef) -> {
         StackedFontIcon fontIcon = new StackedFontIcon();            
-        if(fileRef.getRef().isDirectory() && fileRef.getRef().isDirectoryEmpty(".class")){
+        if(fileRef.ref().isDirectory() && fileRef.ref().isDirectoryEmpty(".class")){
             FontIcon icon = new FontIcon("mdal-folder");
             fontIcon.getChildren().add(icon);
         }
-        else if(fileRef.getRef().isDirectory()){
+        else if(fileRef.ref().isDirectory()){
             FontIcon icon = new FontIcon("mdoal-create_new_folder");
             fontIcon.getChildren().add(icon);                
         }
-        else if(!fileRef.getRef().isDirectory()){
+        else if(!fileRef.ref().isDirectory()){
             FontIcon icon = new FontIcon("mdoal-code");
             fontIcon.getChildren().add(icon);
         }
@@ -144,7 +144,7 @@ public class FolderTreeDialogPane extends HBox {
         folderExploreTreeView.setShowRoot(false); 
         
         folderExploreTreeView.getSelectionModel().selectedItemProperty().addListener((o, ov, nv) ->{
-            var f = Optional.<FileRef>ofNullable(nv.getValue().getRef());  
+            var f = Optional.<FileRef>ofNullable(nv.getValue().ref());  
             switch(f.isPresent() && f.get().isLeaf()){
                 case true -> folderExploreSelectedProperty.set(f.get().parent().get());
                 case false -> folderExploreSelectedProperty.set(null);
@@ -186,7 +186,7 @@ public class FolderTreeDialogPane extends HBox {
                     }
                                         
                     var fileInfoTreeModel = TreeItemModel.<FileRefInfo, FileRefInfoTreeItem>of(new FileRefInfo(f.get(), ".class"),
-                            m -> new FileRefInfoTreeItem(m, graphicsFactoryFileRefInfo, FileRefInfo::getChildren));
+                            m -> new FileRefInfoTreeItem(m, graphicsFactoryFileRefInfo, FileRefInfo::children));
                     fileInfoTreeModel.setExpanded(true);
                     
                     //Setup the treeview
@@ -224,7 +224,7 @@ public class FolderTreeDialogPane extends HBox {
     
     private void setFolderExplore(FileRef folder){        
         var fileTreeModel = TreeItemModel.of(new FileRefModel(folder, ".class"),
-                                m -> new FileRefTreeItem(m, graphicsFactoryFileRefModel, FileRefModel::getChildren));
+                                m -> new FileRefTreeItem(m, graphicsFactoryFileRefModel, FileRefModel::children));
         fileTreeModel.setExpanded(true);
         folderExploreRootItem.getChildren().setAll(fileTreeModel.rootTreeItem());  
         folderExploreRootProperty.set(folder);

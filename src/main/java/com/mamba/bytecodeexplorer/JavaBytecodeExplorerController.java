@@ -10,14 +10,17 @@ import com.mamba.bytecodeexplorer.dialog.FolderTreeDialog;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefModel;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
+import com.mamba.bytecodeexplorer.watcher.FileRefTree;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcher;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcherListener;
+import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem2;
 import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
 import java.io.IO;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -65,15 +68,15 @@ public class JavaBytecodeExplorerController implements Initializable {
     
     Callback<FileRefModel, Node> graphicsFactory = (FileRefModel fileRef) -> {
         StackedFontIcon fontIcon = new StackedFontIcon();            
-        if(fileRef.getRef().isDirectory() && fileRef.getRef().isDirectoryEmpty(".class")){
+        if(fileRef.ref().isDirectory() && fileRef.ref().isDirectoryEmpty(".class")){
             FontIcon icon = new FontIcon("mdal-folder");
             fontIcon.getChildren().add(icon);
         }
-        else if(fileRef.getRef().isDirectory()){
+        else if(fileRef.ref().isDirectory()){
             FontIcon icon = new FontIcon("mdoal-create_new_folder");
             fontIcon.getChildren().add(icon);                
         }
-        else if(!fileRef.getRef().isDirectory()){
+        else if(!fileRef.ref().isDirectory()){
             FontIcon icon = new FontIcon("mdoal-code");
             fontIcon.getChildren().add(icon);
         }
@@ -106,11 +109,11 @@ public class JavaBytecodeExplorerController implements Initializable {
                 Platform.runLater(() -> {
                     rootModel.findInTree(parent).ifPresent(fModel -> {
                         if ((child.hasExtension() && child.isFileExtension(".class")) || child.isDirectory()) {
-                            boolean exists = fModel.getChildren().stream()
-                                .anyMatch(m -> m.getRef().equals(child));
+                            boolean exists = fModel.children().stream()
+                                .anyMatch(m -> m.ref().equals(child));
 
                             if (!exists) {
-                                fModel.getChildren().add(new FileRefModel(child));
+                                fModel.children().add(new FileRefModel(child));
                             }
                         }
                     });
@@ -125,7 +128,7 @@ public class JavaBytecodeExplorerController implements Initializable {
                 Platform.runLater(()->{
                     rootModel.findInTree(parent).ifPresent(fModel -> {
                         fModel.findInTree(child).ifPresent(toRemove -> {
-                            fModel.getChildren().remove(toRemove);                            
+                            fModel.children().remove(toRemove);                            
                         });
                     });
                 });
@@ -148,13 +151,12 @@ public class JavaBytecodeExplorerController implements Initializable {
     }
     
     //this should be called if folder is added in rootItem (children and their whole hierarchy of subchildren are added automatically in the listener or during initialisation)
-    private void addToRoot(FileRefModel fileRefModel){
+    private void addToRoot(FileRefModel fileRefModel){       
         rootItem.getChildren().add(
-            new FileRefTreeItem(
+            new FileRefTreeItem2<>(
                 fileRefModel,
-                graphicsFactory,
-                FileRefModel::getChildren // no parentheses here
-            )
+                graphicsFactory, 
+                FileRefModel::children)
         );        
     }
     

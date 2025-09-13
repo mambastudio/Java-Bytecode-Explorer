@@ -13,5 +13,5 @@ import javafx.collections.ObservableList;
  * @param <S>
  */
 public interface RecursiveTreeModel<T, S extends RecursiveTreeModel<T, S>> {
-    public ObservableList<S> getChildren();
+    public ObservableList<S> children();
 }
