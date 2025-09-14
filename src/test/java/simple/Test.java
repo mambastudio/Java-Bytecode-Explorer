@@ -4,11 +4,8 @@
  */
 package simple;
 
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefModel;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.collections.ObservableList;
-import javafx.util.Callback;
 
 /**
  *

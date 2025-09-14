@@ -8,19 +8,17 @@ import atlantafx.base.theme.NordDark;
 import atlantafx.base.theme.NordLight;
 import com.mamba.bytecodeexplorer.dialog.FolderTreeDialog;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefModel;
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
 import com.mamba.bytecodeexplorer.watcher.FileRefTree;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcher;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcherListener;
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem2;
+import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem;
 import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
 import java.io.IO;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -62,11 +60,11 @@ public class JavaBytecodeExplorerController implements Initializable {
      * @param rb
      */
         
-    TreeItem<FileRefModel> rootItem = new TreeItem<>(null); // acts like an invisible virtual rootItem TODO: Help in creating a virtual fileref (points to nothing) to avoid nulls
+    TreeItem rootItem = new TreeItem<FileRefModel>(null); // acts like an invisible virtual rootItem TODO: Help in creating a virtual fileref (points to nothing) to avoid nulls
     FileRefModel rootModel = new FileRefModel("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap", ".class");
     FileRefWatcher watcher  = new FileRefWatcher(100);
     
-    Callback<FileRefModel, Node> graphicsFactory = (FileRefModel fileRef) -> {
+    Callback<? extends FileRefTree, Node> graphicsFactory = (fileRef) -> {
         StackedFontIcon fontIcon = new StackedFontIcon();            
         if(fileRef.ref().isDirectory() && fileRef.ref().isDirectoryEmpty(".class")){
             FontIcon icon = new FontIcon("mdal-folder");
@@ -151,13 +149,8 @@ public class JavaBytecodeExplorerController implements Initializable {
     }
     
     //this should be called if folder is added in rootItem (children and their whole hierarchy of subchildren are added automatically in the listener or during initialisation)
-    private void addToRoot(FileRefModel fileRefModel){       
-        rootItem.getChildren().add(
-            new FileRefTreeItem2<>(
-                fileRefModel,
-                graphicsFactory, 
-                FileRefModel::children)
-        );        
+    private void addToRoot(FileRefModel fileRefModel){        
+        //rootItem.getChildren().add(new FileTreeItem(null, null, null));
     }
     
     public void open(ActionEvent e){
