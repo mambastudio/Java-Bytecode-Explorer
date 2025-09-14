@@ -7,6 +7,7 @@ package com.mamba.bytecodeexplorer.watcher.treeitem;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
 import com.mamba.bytecodeexplorer.watcher.FileRefTree;
 import java.util.Objects;
+import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -14,12 +15,12 @@ import javafx.collections.ObservableList;
  *
  * @author joemw
  */
-public class ClassTreeStable implements FileRefTree<ClassTreeStable>{
+public class BiClassTreeStable implements FileRefTree<BiClassTreeStable>{
     
     public final FileRef ref;
-    public final ObservableList<ClassTreeStable> children;
+    public final ObservableList<BiClassTreeStable> children;
     
-    public ClassTreeStable(FileRef ref){
+    public BiClassTreeStable(FileRef ref){
         Objects.requireNonNull(ref);        
         this.ref = ref;
         if(!ref.isDirectory())
@@ -29,7 +30,7 @@ public class ClassTreeStable implements FileRefTree<ClassTreeStable>{
             this.children = FXCollections.observableArrayList();
             for(FileRef r : ref.children(".class"))
                 if(r.isLeaf())
-                    this.children.add(new ClassTreeStable(r));
+                    this.children.add(new BiClassTreeStable(r));
         }        
     }
 
@@ -39,8 +40,13 @@ public class ClassTreeStable implements FileRefTree<ClassTreeStable>{
     }
 
     @Override
-    public ObservableList<ClassTreeStable> children() {
+    public ObservableList<BiClassTreeStable> children() {
         return children;
+    }
+
+    @Override
+    public Optional<BiClassTreeStable> findInTree(FileRef x) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }

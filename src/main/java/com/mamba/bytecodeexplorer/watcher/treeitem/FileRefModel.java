@@ -9,7 +9,7 @@ import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class FileRefModel implements FileRefTree, RecursiveTreeModel<FileRef, FileRefModel> {
+public class FileRefModel implements FileRefTree<FileRefModel>, RecursiveTreeModel<FileRef, FileRefModel> {
 
     private final FileRef ref;
     private final FileExtensions extensionsHolder;
@@ -74,6 +74,7 @@ public class FileRefModel implements FileRefTree, RecursiveTreeModel<FileRef, Fi
         return null;
     }
 
+    @Override
     public Optional<FileRefModel> findInTree(FileRef target) {
         if (ref != null && ref.path().normalize().equals(target.path().normalize()))
             return Optional.of(this);

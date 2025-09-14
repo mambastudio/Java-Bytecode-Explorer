@@ -15,12 +15,11 @@ import javafx.util.Callback;
  * @author user
  * @param <T>
  */
-public class FileRefTreeItem2<T extends FileRefTree> extends RecursiveTreeItem<T> {
-    
+public class FileRefTreeItem2<T extends FileRefTree<T>>  extends RecursiveTreeItem<T> {
 
     public FileRefTreeItem2(T value,
-                           Callback<T, Node> graphicsFactory,
-                           Callback<T, ObservableList<T>> childrenFactory) {
+                            Callback<T, Node> graphicsFactory,
+                            Callback<T, ObservableList<T>> childrenFactory) {
         super(value, graphicsFactory, childrenFactory);
     }
 }

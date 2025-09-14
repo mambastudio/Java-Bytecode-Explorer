@@ -118,7 +118,7 @@ public class FileRefWatcher {
         }
     }
     
-    private<T extends FileRefTree<T>> void walkAndRegisterDirectories(FileRefTree<T> rootTree) {
+    private<T extends FileRefTree<T>> void walkAndRegisterDirectories(T rootTree) { 
         FileRef ref = rootTree.ref();
         if (ref == null || ref.isLeaf()) {
             return;

@@ -9,10 +9,10 @@ import atlantafx.base.theme.NordLight;
 import com.mamba.bytecodeexplorer.dialog.FolderTreeDialog;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefModel;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
-import com.mamba.bytecodeexplorer.watcher.FileRefTree;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcher;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcherListener;
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem;
+import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem2;
+import com.mamba.bytecodeexplorer.watcher.treeitem.RootItemSetup;
 import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
 import java.io.IO;
 import java.net.URL;
@@ -23,17 +23,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
-import javafx.util.Callback;
 import jfx.incubator.scene.control.richtext.CodeArea;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.javafx.StackedFontIcon;
 
 /**
  * FXML Controller class
@@ -60,27 +56,9 @@ public class JavaBytecodeExplorerController implements Initializable {
      * @param rb
      */
         
-    TreeItem rootItem = new TreeItem<FileRefModel>(null); // acts like an invisible virtual rootItem TODO: Help in creating a virtual fileref (points to nothing) to avoid nulls
-    FileRefModel rootModel = new FileRefModel("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap", ".class");
-    FileRefWatcher watcher  = new FileRefWatcher(100);
-    
-    Callback<? extends FileRefTree, Node> graphicsFactory = (fileRef) -> {
-        StackedFontIcon fontIcon = new StackedFontIcon();            
-        if(fileRef.ref().isDirectory() && fileRef.ref().isDirectoryEmpty(".class")){
-            FontIcon icon = new FontIcon("mdal-folder");
-            fontIcon.getChildren().add(icon);
-        }
-        else if(fileRef.ref().isDirectory()){
-            FontIcon icon = new FontIcon("mdoal-create_new_folder");
-            fontIcon.getChildren().add(icon);                
-        }
-        else if(!fileRef.ref().isDirectory()){
-            FontIcon icon = new FontIcon("mdoal-code");
-            fontIcon.getChildren().add(icon);
-        }
-        return fontIcon;
-    };
-    
+    FileRefWatcher watcher  = new FileRefWatcher(100); 
+    final RootItemSetup<FileRefModel> rtSetup = new RootItemSetup(new FileRefModel("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap", ".class"));
+        
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         Font font = Font.loadFont(App.class.getResource("RobotoMono-Regular.ttf").toExternalForm(), 12);
@@ -105,7 +83,7 @@ public class JavaBytecodeExplorerController implements Initializable {
             @Override
             public void onCreate(FileRef parent, FileRef child) {
                 Platform.runLater(() -> {
-                    rootModel.findInTree(parent).ifPresent(fModel -> {
+                    rtSetup.rootModel().findInTree(parent).ifPresent(fModel -> {
                         if ((child.hasExtension() && child.isFileExtension(".class")) || child.isDirectory()) {
                             boolean exists = fModel.children().stream()
                                 .anyMatch(m -> m.ref().equals(child));
@@ -124,7 +102,7 @@ public class JavaBytecodeExplorerController implements Initializable {
             @Override
             public void onDelete(FileRef parent, FileRef child) {
                 Platform.runLater(()->{
-                    rootModel.findInTree(parent).ifPresent(fModel -> {
+                    rtSetup.rootModel().findInTree(parent).ifPresent(fModel -> {
                         fModel.findInTree(child).ifPresent(toRemove -> {
                             fModel.children().remove(toRemove);                            
                         });
@@ -140,17 +118,11 @@ public class JavaBytecodeExplorerController implements Initializable {
         
         root.getChildren().addAll(folderTreeDialog, aboutDialog);
     }    
-    
+        
     private void initFileExplorer(){  
-        rootItem.setExpanded(true);
-        fileTreeView.setRoot(rootItem);
-        fileTreeView.setShowRoot(false);         
-        addToRoot(rootModel);
-    }
-    
-    //this should be called if folder is added in rootItem (children and their whole hierarchy of subchildren are added automatically in the listener or during initialisation)
-    private void addToRoot(FileRefModel fileRefModel){        
-        //rootItem.getChildren().add(new FileTreeItem(null, null, null));
+        rtSetup.rootItem().setExpanded(true);
+        fileTreeView.setRoot(rtSetup.rootItem());
+        fileTreeView.setShowRoot(false);  
     }
     
     public void open(ActionEvent e){

@@ -4,17 +4,13 @@
  */
 package com.mamba.bytecodeexplorer.watcher;
 
-import javafx.collections.ObservableList;
+import com.mamba.bytecodeexplorer.Tree;
 
 /**
  *
  * @author user
- * @param <T>
+ * @param <Y>
  */
-public interface FileRefTree<T extends FileRefTree<T>> {
-    FileRef ref();
-    ObservableList<T> children();
-    default boolean isLeaf(){
-        return children().isEmpty();
-    }
+public interface FileRefTree<Y extends FileRefTree<Y>> extends Tree<FileRef, Y>{
+    
 }

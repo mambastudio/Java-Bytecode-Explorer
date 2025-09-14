@@ -2,10 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package simple;
+package com.mamba.bytecodeexplorer.watcher.treeitem;
 
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefModel;
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem2;
+import com.mamba.bytecodeexplorer.watcher.FileRefTree;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.util.Callback;
@@ -15,9 +14,10 @@ import org.kordamp.ikonli.javafx.StackedFontIcon;
 /**
  *
  * @author user
+ * @param <T>
  */
-public class Test {
-    Callback<FileRefModel, Node> graphicsFactory = fileRef -> {
+public class RootItemSetup<T extends FileRefTree<T>> {
+    private final Callback<T, Node> graphicsFactory = fileRef -> {
         StackedFontIcon fontIcon = new StackedFontIcon();            
         if(fileRef.ref().isDirectory() && fileRef.ref().isDirectoryEmpty(".class")){
             FontIcon icon = new FontIcon("mdal-folder");
@@ -35,24 +35,27 @@ public class Test {
     };
     
     
-    FileRefModel rootModel = new FileRefModel("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap", ".class");
-    TreeItem<FileRefModel> rootItem = new TreeItem<>(rootModel); // acts like an invisible virtual rootItem TODO: Help in creating a virtual fileref (points to nothing) to avoid nulls
-    
-    void main(){
+    private final T rootModel;
+    private final TreeItem<T> rootItem = new TreeItem(null); // acts like an invisible virtual rootItem TODO: Help in creating a virtual fileref (points to nothing) to avoid nulls
+
+    public RootItemSetup(T rootModel){
+        this.rootModel = rootModel;
         
-    }
-    
-    //this should be called if folder is added in rootItem (children and their whole hierarchy of subchildren are added automatically in the listener or during initialisation)
-    private void addToRoot(FileRefModel fileRefModel){        
-        //rootItem.getChildren().add(new FileTreeItem(null, null, null));
+        //this should be called if folder is added in rootItem (children and their whole hierarchy of subchildren are added automatically in the listener or during initialisation)
         rootItem.getChildren().add(
             new FileRefTreeItem2<>(
-                fileRefModel,
-                graphicsFactory,
-                FileRefModel::children // no parentheses here
+                this.rootModel,
+                this.graphicsFactory,
+                T::children // no parentheses here
             )
-        );    
+        );  
+    }    
+    
+    public T rootModel(){
+        return rootModel;
     }
     
-    
+    public TreeItem<T> rootItem(){
+        return rootItem;
+    }
 }
