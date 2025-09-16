@@ -5,7 +5,7 @@
 package simple;
 
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefModel;
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem2;
+import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.util.Callback;
@@ -45,8 +45,7 @@ public class Test {
     //this should be called if folder is added in rootItem (children and their whole hierarchy of subchildren are added automatically in the listener or during initialisation)
     private void addToRoot(FileRefModel fileRefModel){        
         //rootItem.getChildren().add(new FileTreeItem(null, null, null));
-        rootItem.getChildren().add(
-            new FileRefTreeItem2<>(
+        rootItem.getChildren().add(new FileRefTreeItem<>(
                 fileRefModel,
                 graphicsFactory,
                 FileRefModel::children // no parentheses here

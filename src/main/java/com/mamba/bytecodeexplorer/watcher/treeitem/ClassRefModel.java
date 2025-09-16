@@ -15,12 +15,12 @@ import javafx.collections.ObservableList;
  *
  * @author joemw
  */
-public class BiClassTreeStable implements FileRefTree<BiClassTreeStable>{
+public class ClassRefModel implements FileRefTree<ClassRefModel>{
     
     public final FileRef ref;
-    public final ObservableList<BiClassTreeStable> children;
+    public final ObservableList<ClassRefModel> children;
     
-    public BiClassTreeStable(FileRef ref){
+    public ClassRefModel(FileRef ref){
         Objects.requireNonNull(ref);        
         this.ref = ref;
         if(!ref.isDirectory())
@@ -30,7 +30,7 @@ public class BiClassTreeStable implements FileRefTree<BiClassTreeStable>{
             this.children = FXCollections.observableArrayList();
             for(FileRef r : ref.children(".class"))
                 if(r.isLeaf())
-                    this.children.add(new BiClassTreeStable(r));
+                    this.children.add(new ClassRefModel(r));
         }        
     }
 
@@ -40,12 +40,12 @@ public class BiClassTreeStable implements FileRefTree<BiClassTreeStable>{
     }
 
     @Override
-    public ObservableList<BiClassTreeStable> children() {
+    public ObservableList<ClassRefModel> children() {
         return children;
     }
 
     @Override
-    public Optional<BiClassTreeStable> findInTree(FileRef x) {
+    public Optional<ClassRefModel> findInTree(FileRef x) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     

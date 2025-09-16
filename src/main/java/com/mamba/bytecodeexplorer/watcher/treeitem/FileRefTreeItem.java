@@ -5,6 +5,7 @@
 package com.mamba.bytecodeexplorer.watcher.treeitem;
 
 import com.mamba.bytecodeexplorer.RecursiveTreeItem;
+import com.mamba.bytecodeexplorer.watcher.FileRefTree;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.util.Callback;
@@ -12,18 +13,21 @@ import javafx.util.Callback;
 /**
  *
  * @author user
+ * @param <T>
  */
-public class FileRefTreeItem extends RecursiveTreeItem<FileRefModel>{
+public class FileRefTreeItem<T extends FileRefTree<T>>  extends RecursiveTreeItem<T> {
     
-    public FileRefTreeItem(Callback<FileRefModel, ObservableList<FileRefModel>> childrenFactory) {
+    public FileRefTreeItem(Callback<T, ObservableList<T>> childrenFactory) {
         super(childrenFactory);
     }
-    
-    public FileRefTreeItem(FileRefModel value, Callback<FileRefModel, ObservableList<FileRefModel>> childrenFactory){
-        super(value, (item) -> null, childrenFactory);
-    }
 
-    public FileRefTreeItem(FileRefModel value, Callback<FileRefModel, Node> graphicsFactory, Callback<FileRefModel, ObservableList<FileRefModel>> childrenFactory){
+    public FileRefTreeItem(T value,
+                            Callback<T, Node> graphicsFactory,
+                            Callback<T, ObservableList<T>> childrenFactory) {
         super(value, graphicsFactory, childrenFactory);
+    }
+    
+    public FileRefTreeItem(T value, Callback<T, ObservableList<T>> childrenFactory){
+        super(value, (item) -> null, childrenFactory);
     }
 }

@@ -224,7 +224,7 @@ public class FolderTreeDialogPane extends HBox {
     
     private void setFolderExplore(FileRef folder){        
         var fileTreeModel = TreeItemModel.of(new FileRefModel(folder, ".class"),
-                                m -> new FileRefTreeItem(m, graphicsFactoryFileRefModel, FileRefModel::children));
+                                m -> new FileRefTreeItem<>(m, graphicsFactoryFileRefModel, FileRefModel::children));
         fileTreeModel.setExpanded(true);
         folderExploreRootItem.getChildren().setAll(fileTreeModel.rootTreeItem());  
         folderExploreRootProperty.set(folder);

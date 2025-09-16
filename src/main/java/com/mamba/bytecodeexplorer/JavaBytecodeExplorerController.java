@@ -11,7 +11,7 @@ import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefModel;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcher;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcherListener;
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem2;
+import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem;
 import com.mamba.bytecodeexplorer.watcher.treeitem.RootItemSetup;
 import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
 import java.io.IO;

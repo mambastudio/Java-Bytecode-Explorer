@@ -43,7 +43,7 @@ public class RootItemSetup<T extends FileRefTree<T>> {
         
         //this should be called if folder is added in rootItem (children and their whole hierarchy of subchildren are added automatically in the listener or during initialisation)
         rootItem.getChildren().add(
-            new FileRefTreeItem2<>(
+            new FileRefTreeItem<>(
                 this.rootModel,
                 this.graphicsFactory,
                 T::children // no parentheses here

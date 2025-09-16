@@ -4,15 +4,10 @@
  */
 package com.mamba.bytecodeexplorer;
 
-import com.mamba.bytecodeexplorer.utility.ListChangeCase;
 import com.mamba.bytecodeexplorer.utility.ListChangeCase.AddRemoveCase;
 import com.mamba.bytecodeexplorer.utility.ListChangeCase.Kind;
-import com.mamba.bytecodeexplorer.utility.ListChangeCase.PermutationCase;
-import com.mamba.bytecodeexplorer.utility.ListChangeCase.UpdateCase;
 import com.mamba.bytecodeexplorer.utility.ListChangeUtils;
-import java.util.List;
 import java.util.stream.Collectors;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
