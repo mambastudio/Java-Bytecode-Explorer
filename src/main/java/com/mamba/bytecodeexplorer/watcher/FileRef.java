@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -290,27 +291,25 @@ public record FileRef(Path path) {
         };
     }
     
-   @Override
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof FileRef other)) return false;
-
-        // On Windows, compare in lower case for case-insensitivity
-        if (IS_WINDOWS) {
-            return path.toString().toLowerCase().equals(other.path.toString().toLowerCase());
-        }
-
-        return path.equals(other.path);
-    }
-    
-    @Override
-    public int hashCode() {
+        
         return switch(IS_WINDOWS){
-            case true -> path.toString().toLowerCase().hashCode();
-            case false -> path.hashCode();
+            case true -> path.normalize().toString().equalsIgnoreCase(other.path.normalize().toString());
+            case false -> path.normalize().equals(other.path.normalize());
         };
     }
-    
+
+    @Override
+    public int hashCode() {        
+        return switch(IS_WINDOWS){
+            case true -> path.normalize().toString().toLowerCase(Locale.ROOT).hashCode();
+            case false -> path.normalize().hashCode();
+        };
+    }
+
     @Override
     public String toString(){
         return name();

@@ -5,7 +5,6 @@ import com.mamba.bytecodeexplorer.watcher.FileExtensions;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
 import com.mamba.bytecodeexplorer.watcher.FileRefTree;
 import java.nio.file.Path;
-import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -70,45 +69,23 @@ public class FileRefModel implements FileRefTree<FileRefModel>, RecursiveTreeMod
         return children;
     }
     
-    public ObservableList<FileRefModel> children2(FileRefModel m){
-        return null;
-    }
-
-    //CANT THIS BE TAKEN TO FileRefTree interface instead?
-    @Override
-    public Optional<FileRefModel> findInTree(FileRef target) {
-        //check node ref for this is equal to target: SHOULD WE MODIFY equals AND USE IT INSTEAD?
-        if (ref != null && ref.path().normalize().equals(target.path().normalize()))
-            return Optional.of(this);
-
-        //check if children has target: SHOULD THIS BE DELETED AND USE ONE BELOW INSTEAD?
-        for (FileRefModel child : children()) {
-            if (child.ref != null && child.ref.path().normalize().equals(target.path().normalize()))
-                return Optional.of(child);
-        }
-
-        //LOOKS STABLE TO USE THIS INSTEAD OF THE ABOVE
-        for (FileRefModel child : children()) {
-            Optional<FileRefModel> match = child.findInTree(target);
-            if (match.isPresent()) return match;
-        }
-
-        return Optional.empty();
-    }
-
     @Override
     public String toString() {
         return ref != null ? ref.name() : "";
     }
 
-    @Override
+    /**
+     *
+     * @param obj
+     * @return
+     */
+    @Override    
     public boolean equals(Object obj) {
-        return this == obj ||
-            (obj instanceof FileRefModel other && ref != null && ref.equals(other.ref));
+        return equalsByRef(obj);        
     }
 
     @Override
     public int hashCode() {
-        return ref != null ? ref.hashCode() : 0;
+        return hashCodeByRef();
     }
 }
