@@ -6,6 +6,8 @@ package com.mamba.bytecodeexplorer;
 
 import com.mamba.bytecodeexplorer.utility.ListChangeCase.AddRemoveCase;
 import com.mamba.bytecodeexplorer.utility.ListChangeCase.Kind;
+import static com.mamba.bytecodeexplorer.utility.ListChangeCase.Kind.ADDED;
+import static com.mamba.bytecodeexplorer.utility.ListChangeCase.Kind.REMOVED;
 import com.mamba.bytecodeexplorer.utility.ListChangeUtils;
 import java.util.stream.Collectors;
 import javafx.collections.ListChangeListener.Change;
