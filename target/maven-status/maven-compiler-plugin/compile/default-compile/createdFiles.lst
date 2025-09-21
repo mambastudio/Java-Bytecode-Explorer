@@ -16,6 +16,7 @@ com\mamba\bytecodeexplorer\RecursiveTreeModel.class
 com\mamba\bytecodeexplorer\TreeItemModel.class
 com\mamba\bytecodeexplorer\watcher\FileRefWatcher$1.class
 com\mamba\bytecodeexplorer\dialog\FolderTreePair.class
+com\mamba\bytecodeexplorer\watcher\AbstractFileRefTree.class
 com\mamba\bytecodeexplorer\SampleString.class
 com\mamba\bytecodeexplorer\JavaBytecodeExplorerController.class
 com\mamba\bytecodeexplorer\JavaBytecodeExplorerController$1.class

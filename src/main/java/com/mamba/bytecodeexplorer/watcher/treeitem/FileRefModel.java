@@ -1,14 +1,14 @@
 package com.mamba.bytecodeexplorer.watcher.treeitem;
 
 import com.mamba.bytecodeexplorer.RecursiveTreeModel;
+import com.mamba.bytecodeexplorer.watcher.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.watcher.FileExtensions;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
-import com.mamba.bytecodeexplorer.watcher.FileRefTree;
 import java.nio.file.Path;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class FileRefModel implements FileRefTree<FileRefModel>, RecursiveTreeModel<FileRef, FileRefModel> {
+public class FileRefModel extends AbstractFileRefTree<FileRefModel> implements RecursiveTreeModel<FileRef, FileRefModel> {
 
     private final FileRef ref;
     private final FileExtensions extensionsHolder;
@@ -72,20 +72,5 @@ public class FileRefModel implements FileRefTree<FileRefModel>, RecursiveTreeMod
     @Override
     public String toString() {
         return ref != null ? ref.name() : "";
-    }
-
-    /**
-     *
-     * @param obj
-     * @return
-     */
-    @Override    
-    public boolean equals(Object obj) {
-        return equalsByRef(obj);        
-    }
-
-    @Override
-    public int hashCode() {
-        return hashCodeByRef();
-    }
+    }   
 }
