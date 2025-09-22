@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class FileRefModel extends AbstractFileRefTree<FileRefModel> implements RecursiveTreeModel<FileRef, FileRefModel> {
+public class FileRefModel extends AbstractFileRefTree<FileRefModel> implements RecursiveTreeModel<FileRefModel> {
 
     private final FileRef ref;
     private final FileExtensions extensionsHolder;

@@ -15,7 +15,7 @@ import javafx.collections.ObservableList;
  *
  * @author joemw
  */
-public class ClassRefModel extends AbstractFileRefTree<ClassRefModel> implements RecursiveTreeModel<FileRef, ClassRefModel>{
+public class ClassRefModel extends AbstractFileRefTree<ClassRefModel> implements RecursiveTreeModel<ClassRefModel>{
     
     public final FileRef ref;
     public final ObservableList<ClassRefModel> children;

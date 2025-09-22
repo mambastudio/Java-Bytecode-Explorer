@@ -5,6 +5,7 @@
 package com.mamba.bytecodeexplorer.watcher.treeitem;
 
 import com.mamba.bytecodeexplorer.RecursiveTreeModel;
+import com.mamba.bytecodeexplorer.watcher.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.watcher.FileExtensions;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
 import java.util.Objects;
@@ -15,7 +16,7 @@ import javafx.collections.ObservableList;
  *
  * @author user
  */
-public class FileRefInfo implements RecursiveTreeModel<FileRef, FileRefInfo>{
+public class FileRefInfo extends AbstractFileRefTree<FileRefInfo> implements RecursiveTreeModel<FileRefInfo>{
     private final FileRef fileRef;
     private final ObservableList<FileRefInfo> children = FXCollections.observableArrayList();
     private final FileExtensions extensions;
@@ -83,5 +84,10 @@ public class FileRefInfo implements RecursiveTreeModel<FileRef, FileRefInfo>{
     
     public void addChildren(FileRefInfo fileRefInfo){
         children.add(fileRefInfo);
+    }
+
+    @Override
+    public FileRef ref() {
+        return fileRef;
     }
 }

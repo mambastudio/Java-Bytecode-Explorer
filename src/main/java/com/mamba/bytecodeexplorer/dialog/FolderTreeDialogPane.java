@@ -9,7 +9,6 @@ import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefModel;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefInfo;
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefInfoTreeItem;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -185,8 +184,8 @@ public class FolderTreeDialogPane extends HBox {
                         parentComboBox.setValue(r);
                     }
                                         
-                    var fileInfoTreeModel = TreeItemModel.<FileRefInfo, FileRefInfoTreeItem>of(new FileRefInfo(f.get(), ".class"),
-                            m -> new FileRefInfoTreeItem(m, graphicsFactoryFileRefInfo, FileRefInfo::children));
+                    var fileInfoTreeModel = TreeItemModel.of(new FileRefInfo(f.get(), ".class"),
+                            m -> new FileRefTreeItem<>(m, graphicsFactoryFileRefInfo, FileRefInfo::children));
                     fileInfoTreeModel.setExpanded(true);
                     
                     //Setup the treeview

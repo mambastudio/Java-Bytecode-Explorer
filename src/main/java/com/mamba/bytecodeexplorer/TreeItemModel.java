@@ -14,7 +14,7 @@ import javafx.util.Callback;
  * @param <S>
  * @param <Q>
  */
-public class TreeItemModel<S extends RecursiveTreeModel<?, S>,  Q extends RecursiveTreeItem<S>> {
+public class TreeItemModel<S extends RecursiveTreeModel<S>,  Q extends RecursiveTreeItem<S>> {
     private final S rootModel;
     private final Q rootTreeItem;
 
@@ -35,13 +35,13 @@ public class TreeItemModel<S extends RecursiveTreeModel<?, S>,  Q extends Recurs
         rootTreeItem.setExpanded(expanded);
     }
 
-    public static <S extends RecursiveTreeModel<?, S>, Q extends RecursiveTreeItem<S>> TreeItemModel<S, Q> of(
+    public static <S extends RecursiveTreeModel<S>, Q extends RecursiveTreeItem<S>> TreeItemModel<S, Q> of(
             S model,
             Function<S, Q> itemFactory) {
         return new TreeItemModel<>(model, itemFactory);
     }
     
-    public static <S extends RecursiveTreeModel<?, S>, Q extends RecursiveTreeItem<S>> TreeItemModel<S, Q> of(
+    public static <S extends RecursiveTreeModel<S>, Q extends RecursiveTreeItem<S>> TreeItemModel<S, Q> of(
             S model,
             Callback<S, Node> graphicsFactory,
             Function<S, Q> itemFactory) {
