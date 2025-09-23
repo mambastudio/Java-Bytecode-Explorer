@@ -16,7 +16,10 @@ import org.kordamp.ikonli.javafx.StackedFontIcon;
  * @author user
  * @param <T>
  */
-public class RootItemSetup<T extends FileRefTree<T>> {
+public class RootItemSetup<T extends FileRefTree<T>> {    
+    private final T rootModel;
+    private final TreeItem<T> rootItem = new TreeItem(null); // acts like an invisible virtual rootItem TODO: Help in creating a virtual fileref (points to nothing) to avoid nulls
+
     private final Callback<T, Node> graphicsFactory = fileRef -> {
         StackedFontIcon fontIcon = new StackedFontIcon();            
         if(fileRef.ref().isDirectory() && fileRef.ref().isDirectoryEmpty(".class")){
@@ -34,10 +37,6 @@ public class RootItemSetup<T extends FileRefTree<T>> {
         return fontIcon;
     };
     
-    
-    private final T rootModel;
-    private final TreeItem<T> rootItem = new TreeItem(null); // acts like an invisible virtual rootItem TODO: Help in creating a virtual fileref (points to nothing) to avoid nulls
-
     public RootItemSetup(T rootModel){
         this.rootModel = rootModel;
         

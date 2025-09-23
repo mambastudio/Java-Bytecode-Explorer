@@ -4,7 +4,7 @@
  */
 package com.mamba.bytecodeexplorer.dialog;
 
-import com.mamba.bytecodeexplorer.TreeItemModel;
+import com.mamba.bytecodeexplorer.TreeItemUtility;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefModel;
 import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
@@ -184,7 +184,7 @@ public class FolderTreeDialogPane extends HBox {
                         parentComboBox.setValue(r);
                     }
                                         
-                    var fileInfoTreeModel = TreeItemModel.of(new FileRefInfo(f.get(), ".class"),
+                    var fileInfoTreeModel = TreeItemUtility.of(new FileRefInfo(f.get(), ".class"),
                             m -> new FileRefTreeItem<>(m, graphicsFactoryFileRefInfo, FileRefInfo::children));
                     fileInfoTreeModel.setExpanded(true);
                     
@@ -222,7 +222,7 @@ public class FolderTreeDialogPane extends HBox {
     }
     
     private void setFolderExplore(FileRef folder){        
-        var fileTreeModel = TreeItemModel.of(new FileRefModel(folder, ".class"),
+        var fileTreeModel = TreeItemUtility.of(new FileRefModel(folder, ".class"),
                                 m -> new FileRefTreeItem<>(m, graphicsFactoryFileRefModel, FileRefModel::children));
         fileTreeModel.setExpanded(true);
         folderExploreRootItem.getChildren().setAll(fileTreeModel.rootTreeItem());  
