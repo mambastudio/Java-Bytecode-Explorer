@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mamba.bytecodeexplorer.watcher;
+package com.mamba.bytecodeexplorer.tree;
 
-import com.mamba.bytecodeexplorer.Tree;
+import com.mamba.bytecodeexplorer.watcher.FileRef;
 import java.util.Optional;
 
 /**

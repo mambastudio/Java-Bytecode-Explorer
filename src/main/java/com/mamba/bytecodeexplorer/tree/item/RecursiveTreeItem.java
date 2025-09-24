@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mamba.bytecodeexplorer;
+package com.mamba.bytecodeexplorer.tree.item;
 
 import com.mamba.bytecodeexplorer.utility.ListChangeCase.AddRemoveCase;
 import com.mamba.bytecodeexplorer.utility.ListChangeCase.Kind;

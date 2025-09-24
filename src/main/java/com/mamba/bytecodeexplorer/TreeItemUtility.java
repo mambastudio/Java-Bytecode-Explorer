@@ -4,6 +4,8 @@
  */
 package com.mamba.bytecodeexplorer;
 
+import com.mamba.bytecodeexplorer.tree.item.RecursiveTreeItem;
+import com.mamba.bytecodeexplorer.tree.Tree;
 import java.util.function.Function;
 import javafx.scene.Node;
 import javafx.util.Callback;

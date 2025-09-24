@@ -1,6 +1,6 @@
-package com.mamba.bytecodeexplorer.watcher.treeitem;
+package com.mamba.bytecodeexplorer.tree.model;
 
-import com.mamba.bytecodeexplorer.watcher.AbstractFileRefTree;
+import com.mamba.bytecodeexplorer.tree.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.watcher.FileExtensions;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
 import java.nio.file.Path;

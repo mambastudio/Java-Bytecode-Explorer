@@ -5,10 +5,10 @@
 package com.mamba.bytecodeexplorer.dialog;
 
 import com.mamba.bytecodeexplorer.TreeItemUtility;
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefModel;
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefTreeItem;
+import com.mamba.bytecodeexplorer.tree.model.FileRefModel;
+import com.mamba.bytecodeexplorer.tree.item.FileRefTreeItem;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
-import com.mamba.bytecodeexplorer.watcher.treeitem.FileRefInfo;
+import com.mamba.bytecodeexplorer.tree.model.FileRefInfo;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
