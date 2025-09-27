@@ -6,9 +6,9 @@ package com.mamba.bytecodeexplorer.tree.item;
 
 import com.mamba.bytecodeexplorer.tree.FileRefTree;
 import com.mamba.bytecodeexplorer.tree.Tree;
-import com.mamba.bytecodeexplorer.tree.Tree;
 import java.util.function.Function;
 import javafx.scene.Node;
+import javafx.scene.control.TreeItem;
 import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.javafx.StackedFontIcon;
@@ -19,11 +19,11 @@ import org.kordamp.ikonli.javafx.StackedFontIcon;
  * @param <S>
  * @param <Q>
  */
-public class SetupTreeItem<S extends Tree<?, S>,  Q extends RecursiveTreeItem<S>> {
+public class RootTreeItem<S extends Tree<?, S>,  Q extends RecursiveTreeItem<S>> {
     private final S rootModel;
     private final Q rootTreeItem;
 
-    private SetupTreeItem(S rootModel,  Function<S, Q> itemFactory) {
+    private RootTreeItem(S rootModel,  Function<S, Q> itemFactory) {
         this.rootModel = rootModel;
         this.rootTreeItem = itemFactory.apply(rootModel);
     }
@@ -36,25 +36,42 @@ public class SetupTreeItem<S extends Tree<?, S>,  Q extends RecursiveTreeItem<S>
         return rootTreeItem;
     }
     
+    public TreeItem<S> withNullRootItem(){
+        var root = new TreeItem<S>(null);
+        root.getChildren().add(rootTreeItem);
+        return root;
+    }
+    
     public void setExpanded(boolean expanded){
         rootTreeItem.setExpanded(expanded);
     }
-
-    public static <S extends Tree<?, S>, Q extends RecursiveTreeItem<S>> SetupTreeItem<S, Q> of(
-            S model,
-            Function<S, Q> itemFactory) {
-        return new SetupTreeItem<>(model, itemFactory);
+    
+    public RootTreeItem<S,  Q> expandAll(){
+        expandRecursive(rootTreeItem);
+        return this;
     }
     
-    public static <S extends Tree<?, S>, Q extends RecursiveTreeItem<S>> SetupTreeItem<S, Q> of(
+    private void expandRecursive(TreeItem<S> treeItem){
+        treeItem.setExpanded(true); 
+        for(TreeItem<S> item : treeItem.getChildren())
+            expandRecursive(item);
+    }
+
+    public static <S extends Tree<?, S>, Q extends RecursiveTreeItem<S>> RootTreeItem<S, Q> of(
+            S model,
+            Function<S, Q> itemFactory) {
+        return new RootTreeItem<>(model, itemFactory);
+    }
+    
+    public static <S extends Tree<?, S>, Q extends RecursiveTreeItem<S>> RootTreeItem<S, Q> of(
             S model,
             Callback<S, Node> graphicsFactory,
             Function<S, Q> itemFactory) {
-        return new SetupTreeItem<>(model, itemFactory);
+        return new RootTreeItem<>(model, itemFactory);
     }
     
-    public static<S extends FileRefTree<S>> SetupTreeItem<S, FileRefTreeItem<S>> ofFileRef(S model, Callback<S, Node> graphicsFactory){        
-        return new SetupTreeItem<>(
+    public static<S extends FileRefTree<S>> RootTreeItem<S, FileRefTreeItem<S>> ofFileRef(S model, Callback<S, Node> graphicsFactory){        
+        return new RootTreeItem<>(
                 model,
                 m -> new FileRefTreeItem<S>(
                     m,
@@ -63,7 +80,7 @@ public class SetupTreeItem<S extends Tree<?, S>,  Q extends RecursiveTreeItem<S>
                 ));
     }
     
-    public static<S extends FileRefTree<S>> SetupTreeItem<S, FileRefTreeItem<S>> ofFileRef(S model){
+    public static<S extends FileRefTree<S>> RootTreeItem<S, FileRefTreeItem<S>> ofFileRef(S model){
         Callback<S, Node> graphicsFactory = fileRef -> {
             StackedFontIcon fontIcon = new StackedFontIcon();            
             if(fileRef.ref().isDirectory() && fileRef.ref().isDirectoryEmpty(".class")){

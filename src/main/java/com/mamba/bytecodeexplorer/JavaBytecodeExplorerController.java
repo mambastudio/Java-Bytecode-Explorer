@@ -7,12 +7,14 @@ package com.mamba.bytecodeexplorer;
 import atlantafx.base.theme.NordDark;
 import atlantafx.base.theme.NordLight;
 import com.mamba.bytecodeexplorer.dialog.FolderTreeDialog;
+import com.mamba.bytecodeexplorer.dialog.FolderTreePair;
 import com.mamba.bytecodeexplorer.tree.model.FileRefModel;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcher;
 import com.mamba.bytecodeexplorer.watcher.FileRefWatcherListener;
 import com.mamba.bytecodeexplorer.tree.item.FileRefTreeItem;
-import com.mamba.bytecodeexplorer.watcher.treeitem.RootItemSetup;
+import com.mamba.bytecodeexplorer.tree.item.RootTreeItem;
+import com.mamba.bytecodeexplorer.tree.model.ClassRefModel;
 import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
 import java.io.IO;
 import java.net.URL;
@@ -57,7 +59,7 @@ public class JavaBytecodeExplorerController implements Initializable {
      */
         
     FileRefWatcher watcher  = new FileRefWatcher(100); 
-    final RootItemSetup<FileRefModel> rtSetup = new RootItemSetup(new FileRefModel("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap", ".class"));
+    RootTreeItem<FileRefModel, FileRefTreeItem<FileRefModel>> rtSetup = RootTreeItem.ofFileRef(new FileRefModel("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap", ".class"));
         
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -120,16 +122,41 @@ public class JavaBytecodeExplorerController implements Initializable {
     }    
         
     private void initFileExplorer(){  
-        rtSetup.rootItem().setExpanded(true);
-        fileTreeView.setRoot(rtSetup.rootItem());
+        rtSetup.setExpanded(true);
+        fileTreeView.setRoot(rtSetup.withNullRootItem());
         fileTreeView.setShowRoot(false);  
     }
     
     public void open(ActionEvent e){
         folderTreeDialog.showAndWait(result -> {               
-            result.ifPresentOrElse(r -> IO.println(r), () -> IO.println("No result"));
+            result.ifPresentOrElse(r -> {
+                        setTreeItem(r);
+                    }, 
+                    () -> IO.println("No result"));
         });  
         
+    }
+    
+    private void setTreeItem(FolderTreePair f){
+        if(f instanceof FolderTreePair(FileRef ancestorFolder, FileRef parentFolder, _)){         
+            var rootVirtualClass = new ClassRefModel();
+            
+            var ancestor = new ClassRefModel(ancestorFolder, false);   
+            var addedParentToAncestor = ancestor.addChild(new ClassRefModel(parentFolder, true));
+            if(!addedParentToAncestor){ //did it fail?
+                if(ancestorFolder.equals(parentFolder)) //why? is it because ancestor is same as parent folder
+                    rootVirtualClass.addChild(new ClassRefModel(parentFolder, true)); //add to rootvirtual if true
+            }
+            else
+                rootVirtualClass.addChild(ancestor); //since parent added to ancestor, add now to virtual root
+            
+            var rootT = RootTreeItem.ofFileRef(rootVirtualClass).expandAll().rootTreeItem();
+            
+            fileTreeView.setRoot(rootT);
+            fileTreeView.setShowRoot(false);  
+            
+            IO.println(ancestor);
+        }
     }
     
     public void about(ActionEvent e){

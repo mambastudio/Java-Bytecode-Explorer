@@ -6,6 +6,7 @@ package com.mamba.bytecodeexplorer.tree.model;
 
 import com.mamba.bytecodeexplorer.tree.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
+import java.io.IO;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,7 +26,7 @@ public class ClassRefModel extends AbstractFileRefTree<ClassRefModel>{
        
         if(createChildren)
             if(!ref.isDirectory())
-                this.children = FXCollections.emptyObservableList();
+                this.children = FXCollections.observableArrayList(); //TODO
             else
             {
                 this.children = FXCollections.observableArrayList();
@@ -34,7 +35,11 @@ public class ClassRefModel extends AbstractFileRefTree<ClassRefModel>{
                         this.children.add(new ClassRefModel(r, false));
             }    
         else
-            this.children = FXCollections.emptyObservableList();
+            this.children = FXCollections.observableArrayList(); //TODO
+    }
+    
+    public ClassRefModel(){
+        this(FileRef.virtualRoot(), false);
     }
 
     @Override
@@ -42,9 +47,9 @@ public class ClassRefModel extends AbstractFileRefTree<ClassRefModel>{
         return ref;
     }
     
-    public boolean addChild(ClassRefModel model){
+    public boolean addChild(ClassRefModel model){        
         if(model.equals(this))
-            return false;
+            return false;        
         if(model.ref().isDescendantOf(ref)){
             if(children.contains(model))
                 return false;
@@ -56,6 +61,6 @@ public class ClassRefModel extends AbstractFileRefTree<ClassRefModel>{
 
     @Override
     public ObservableList<ClassRefModel> children() {
-        return FXCollections.unmodifiableObservableList(children);
+        return children;
     }
 }

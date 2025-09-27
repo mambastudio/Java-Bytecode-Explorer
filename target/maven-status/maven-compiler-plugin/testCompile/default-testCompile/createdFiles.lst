@@ -1,3 +1,9 @@
-com\mamba\bytecodeexplorer\ModalApplication.class
+com\mamba\bytecodeexplorer\filewatcher\JNAFileMonitor$1.class
+com\mamba\bytecodeexplorer\filewatcher\FileWatcher.class
 com\mamba\bytecodeexplorer\ModalLauncher.class
-simple\Test.class
+com\mamba\bytecodeexplorer\filewatcher\FileWatcher$FileEventEnum.class
+com\mamba\bytecodeexplorer\filewatcher\FileWatcher$Mode.class
+com\mamba\bytecodeexplorer\ModalApplication.class
+com\mamba\bytecodeexplorer\filewatcher\FileWatcherRegistry.class
+com\mamba\bytecodeexplorer\filewatcher\JNAFileMonitor.class
+com\mamba\bytecodeexplorer\filewatcher\FileWatcher$FileEvent.class

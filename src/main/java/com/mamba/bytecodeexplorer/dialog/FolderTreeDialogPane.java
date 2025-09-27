@@ -4,9 +4,8 @@
  */
 package com.mamba.bytecodeexplorer.dialog;
 
-import com.mamba.bytecodeexplorer.TreeItemUtility;
 import com.mamba.bytecodeexplorer.tree.model.FileRefModel;
-import com.mamba.bytecodeexplorer.tree.item.FileRefTreeItem;
+import com.mamba.bytecodeexplorer.tree.item.RootTreeItem;
 import com.mamba.bytecodeexplorer.watcher.FileRef;
 import com.mamba.bytecodeexplorer.tree.model.FileRefInfo;
 import java.io.File;
@@ -18,7 +17,6 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -29,9 +27,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
-import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.javafx.StackedFontIcon;
 
 /**
  *
@@ -63,41 +59,7 @@ public class FolderTreeDialogPane extends HBox {
     @FXML
     ComboBox<FileRef> parentComboBox;
     TreeItem<FileRefInfo> folderInfoRootItem = new TreeItem<>(); 
-   
-    Callback<FileRefModel, Node> graphicsFactoryFileRefModel = (FileRefModel fileRef) -> {
-        StackedFontIcon fontIcon = new StackedFontIcon();            
-        if(fileRef.ref().isDirectory() && fileRef.ref().isDirectoryEmpty(".class")){
-            FontIcon icon = new FontIcon("mdal-folder");
-            fontIcon.getChildren().add(icon);
-        }
-        else if(fileRef.ref().isDirectory()){
-            FontIcon icon = new FontIcon("mdoal-create_new_folder");
-            fontIcon.getChildren().add(icon);                
-        }
-        else if(!fileRef.ref().isDirectory()){
-            FontIcon icon = new FontIcon("mdoal-code");
-            fontIcon.getChildren().add(icon);
-        }
-        return fontIcon;
-    };
-    
-    Callback<FileRefInfo, Node> graphicsFactoryFileRefInfo = (FileRefInfo fileRefInfo) -> {
-        StackedFontIcon fontIcon = new StackedFontIcon();            
-        if(fileRefInfo.getFileRef().isDirectory() && fileRefInfo.getFileRef().isDirectoryEmpty(".class")){
-            FontIcon icon = new FontIcon("mdal-folder");
-            fontIcon.getChildren().add(icon);
-        }
-        else if(fileRefInfo.getFileRef().isDirectory()){
-            FontIcon icon = new FontIcon("mdoal-create_new_folder");
-            fontIcon.getChildren().add(icon);                
-        }
-        else if(!fileRefInfo.getFileRef().isDirectory()){
-            FontIcon icon = new FontIcon("mdoal-code");
-            fontIcon.getChildren().add(icon);
-        }
-        return fontIcon;
-    };
-    
+       
     public FolderTreeDialogPane() {
        
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
@@ -184,8 +146,7 @@ public class FolderTreeDialogPane extends HBox {
                         parentComboBox.setValue(r);
                     }
                                         
-                    var fileInfoTreeModel = TreeItemUtility.of(new FileRefInfo(f.get(), ".class"),
-                            m -> new FileRefTreeItem<>(m, graphicsFactoryFileRefInfo, FileRefInfo::children));
+                    var fileInfoTreeModel = RootTreeItem.ofFileRef(new FileRefInfo(f.get(), ".class"));
                     fileInfoTreeModel.setExpanded(true);
                     
                     //Setup the treeview
@@ -222,8 +183,7 @@ public class FolderTreeDialogPane extends HBox {
     }
     
     private void setFolderExplore(FileRef folder){        
-        var fileTreeModel = TreeItemUtility.of(new FileRefModel(folder, ".class"),
-                                m -> new FileRefTreeItem<>(m, graphicsFactoryFileRefModel, FileRefModel::children));
+        var fileTreeModel = RootTreeItem.ofFileRef(new FileRefModel(folder, ".class"));
         fileTreeModel.setExpanded(true);
         folderExploreRootItem.getChildren().setAll(fileTreeModel.rootTreeItem());  
         folderExploreRootProperty.set(folder);

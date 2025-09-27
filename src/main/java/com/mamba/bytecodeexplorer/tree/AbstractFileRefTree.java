@@ -23,4 +23,14 @@ public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
     public final int hashCode() {
         return ref() != null ? ref().hashCode() : 0;
     }
+    
+    @Override
+    public String toString(){
+        String ch = this.ref().name();
+        /*
+        if(!children().isEmpty())
+            ch = this.ref().name()+ " " +children().toString();       
+        */
+        return ch;
+    }
 }
