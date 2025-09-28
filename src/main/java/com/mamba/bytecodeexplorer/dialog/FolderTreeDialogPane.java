@@ -6,7 +6,7 @@ package com.mamba.bytecodeexplorer.dialog;
 
 import com.mamba.bytecodeexplorer.tree.model.FileRefModel;
 import com.mamba.bytecodeexplorer.tree.item.RootTreeItem;
-import com.mamba.bytecodeexplorer.watcher.FileRef;
+import com.mamba.bytecodeexplorer.file.FileRef;
 import com.mamba.bytecodeexplorer.tree.model.FileRefInfo;
 import java.io.File;
 import java.io.IOException;

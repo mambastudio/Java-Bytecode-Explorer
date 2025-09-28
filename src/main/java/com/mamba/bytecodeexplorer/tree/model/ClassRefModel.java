@@ -5,8 +5,7 @@
 package com.mamba.bytecodeexplorer.tree.model;
 
 import com.mamba.bytecodeexplorer.tree.AbstractFileRefTree;
-import com.mamba.bytecodeexplorer.watcher.FileRef;
-import java.io.IO;
+import com.mamba.bytecodeexplorer.file.FileRef;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

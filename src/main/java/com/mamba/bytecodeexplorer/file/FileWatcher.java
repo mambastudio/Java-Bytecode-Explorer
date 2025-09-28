@@ -1,7 +1,8 @@
-package com.mamba.bytecodeexplorer.filewatcher;
+package com.mamba.bytecodeexplorer.file;
 
 import com.sun.jna.platform.FileMonitor;
 import java.io.File;
+import java.io.IO;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.List;
@@ -26,13 +27,18 @@ public class FileWatcher {
         FILE_NAME_CHANGED_OLD(FileMonitor.FILE_NAME_CHANGED_OLD),
         FILE_RENAMED(FileMonitor.FILE_RENAMED),
         FILE_SECURITY_CHANGED(FileMonitor.FILE_SECURITY_CHANGED),
-        FILE_SIZE_CHANGED(FileMonitor.FILE_SIZE_CHANGED);
+        FILE_SIZE_CHANGED(FileMonitor.FILE_SIZE_CHANGED),
+        
+        // Synthetic event (not from FileMonitor)
+        ROOT_REMOVED(-1);
+
 
         private final int mask;
         FileEventEnum(int mask) { this.mask = mask; }
         public int mask() { return mask; }
 
         public static EnumSet<FileEventEnum> fromMaskSet(int mask) {
+            IO.println(mask);
             EnumSet<FileEventEnum> set = EnumSet.noneOf(FileEventEnum.class);
             for (FileEventEnum e : values()) {
                 if ((mask & e.mask) != 0) set.add(e);
@@ -113,5 +119,14 @@ public class FileWatcher {
     /** Optional: stop *everything* */
     public static void shutdownAll() {
         FileMonitor.getInstance().dispose();
+    }
+    
+    /** Called by registry when root folder is gone. */
+    void fireRootRemoved() {
+        FileEvent event = new FileEvent(FileEventEnum.ROOT_REMOVED, root);
+        for (var handler : handlers) {
+            handler.accept(event);
+        }
+        stop(); // stop watcher automatically
     }
 }

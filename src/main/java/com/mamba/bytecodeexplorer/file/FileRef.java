@@ -1,8 +1,8 @@
-package com.mamba.bytecodeexplorer.watcher;
+package com.mamba.bytecodeexplorer.file;
 
-import static com.mamba.bytecodeexplorer.watcher.FileRef.ExploreType.FILE_EXPLORE;
-import static com.mamba.bytecodeexplorer.watcher.FileRef.ExploreType.FILE_OR_FOLDER_EXPLORE;
-import static com.mamba.bytecodeexplorer.watcher.FileRef.ExploreType.FOLDER_EXPLORE;
+import static com.mamba.bytecodeexplorer.file.FileRef.ExploreType.FILE_EXPLORE;
+import static com.mamba.bytecodeexplorer.file.FileRef.ExploreType.FILE_OR_FOLDER_EXPLORE;
+import static com.mamba.bytecodeexplorer.file.FileRef.ExploreType.FOLDER_EXPLORE;
 
 import java.io.File;
 import java.io.IOException;

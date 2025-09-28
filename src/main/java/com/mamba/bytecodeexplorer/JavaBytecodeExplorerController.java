@@ -9,18 +9,24 @@ import atlantafx.base.theme.NordLight;
 import com.mamba.bytecodeexplorer.dialog.FolderTreeDialog;
 import com.mamba.bytecodeexplorer.dialog.FolderTreePair;
 import com.mamba.bytecodeexplorer.tree.model.FileRefModel;
-import com.mamba.bytecodeexplorer.watcher.FileRef;
-import com.mamba.bytecodeexplorer.watcher.FileRefWatcher;
-import com.mamba.bytecodeexplorer.watcher.FileRefWatcherListener;
+import com.mamba.bytecodeexplorer.file.FileRef;
+import com.mamba.bytecodeexplorer.file.FileWatcher;
+import com.mamba.bytecodeexplorer.file.FileWatcher.FileEvent;
+import static com.mamba.bytecodeexplorer.file.FileWatcher.FileEventEnum.FILE_CREATED;
+import static com.mamba.bytecodeexplorer.file.FileWatcher.FileEventEnum.FILE_DELETED;
+import static com.mamba.bytecodeexplorer.file.FileWatcher.FileEventEnum.FILE_MODIFIED;
+import static com.mamba.bytecodeexplorer.file.FileWatcher.FileEventEnum.FILE_RENAMED;
+import com.mamba.bytecodeexplorer.file.FileWatcherRegistry;
 import com.mamba.bytecodeexplorer.tree.item.FileRefTreeItem;
 import com.mamba.bytecodeexplorer.tree.item.RootTreeItem;
 import com.mamba.bytecodeexplorer.tree.model.ClassRefModel;
 import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
+import java.io.File;
 import java.io.IO;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -58,8 +64,7 @@ public class JavaBytecodeExplorerController implements Initializable {
      * @param rb
      */
         
-    FileRefWatcher watcher  = new FileRefWatcher(100); 
-    RootTreeItem<FileRefModel, FileRefTreeItem<FileRefModel>> rtSetup = RootTreeItem.ofFileRef(new FileRefModel("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap", ".class"));
+    RootTreeItem<FileRefModel, FileRefTreeItem<FileRefModel>> rtSetup = RootTreeItem.ofFileRef(new FileRefModel("C:\\Users\\joemw\\OneDrive\\Documents\\GitHub", ".class"));
         
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -80,42 +85,6 @@ public class JavaBytecodeExplorerController implements Initializable {
         sampleTab.setContent(stack);
         tabView.getTabs().add(sampleTab);
                 
-        watcher.setMonitor(new FileRef("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap"));
-        watcher.registerListener(new FileRefWatcherListener(){
-            @Override
-            public void onCreate(FileRef parent, FileRef child) {
-                Platform.runLater(() -> {
-                    rtSetup.rootModel().findInTree(parent).ifPresent(fModel -> {
-                        if ((child.hasExtension() && child.isFileExtension(".class")) || child.isDirectory()) {
-                            boolean exists = fModel.children().stream()
-                                .anyMatch(m -> m.ref().equals(child));
-
-                            if (!exists) {
-                                fModel.children().add(new FileRefModel(child));
-                            }
-                        }
-                    });
-                });
-            }
-            @Override
-            public void onModify(FileRef parent, FileRef child) {
-                
-            }
-            @Override
-            public void onDelete(FileRef parent, FileRef child) {
-                Platform.runLater(()->{
-                    rtSetup.rootModel().findInTree(parent).ifPresent(fModel -> {
-                        fModel.findInTree(child).ifPresent(toRemove -> {
-                            fModel.children().remove(toRemove);                            
-                        });
-                    });
-                });
-            }
-            
-
-        });
-        watcher.processEvents();        
-               
         initFileExplorer();        
         
         root.getChildren().addAll(folderTreeDialog, aboutDialog);
@@ -129,12 +98,11 @@ public class JavaBytecodeExplorerController implements Initializable {
     
     public void open(ActionEvent e){
         folderTreeDialog.showAndWait(result -> {               
-            result.ifPresentOrElse(r -> {
-                        setTreeItem(r);
-                    }, 
-                    () -> IO.println("No result"));
-        });  
-        
+            result.ifPresentOrElse(r -> {                
+                setTreeItem(r); 
+            }, 
+            () -> IO.println("No result"));
+        });          
     }
     
     private void setTreeItem(FolderTreePair f){
@@ -150,12 +118,38 @@ public class JavaBytecodeExplorerController implements Initializable {
             else
                 rootVirtualClass.addChild(ancestor); //since parent added to ancestor, add now to virtual root
             
+            FileWatcher watcher = FileWatcherRegistry.getOrCreate(
+                            ancestor.ref.file(),
+                            FileWatcher.Mode.RECURSIVE);  
+            IO.println(ancestorFolder);
+            watcher.addEventHandler(event -> {
+                if(event instanceof FileEvent(FileWatcher.FileEventEnum type, File file)){
+                    var o = ancestor.findInTree(new FileRef(file));
+                    if(o.isPresent()){
+                        switch (type) {
+                            case FILE_CREATED -> IO.println("Created: " + file);
+                            case FILE_DELETED -> IO.println("Deleted: " + file);
+                            case FILE_MODIFIED -> IO.println("Modified: " + file);
+                            case FILE_RENAMED -> IO.println("Renamed: " + file);
+                            default -> IO.println("Other event: " + type + " on " + file);
+                        }
+                    }
+                        /*
+                        switch (type) {
+                            case FILE_CREATED -> IO.println("Created: " + file);
+                            case FILE_DELETED -> IO.println("Deleted: " + file);
+                            case FILE_MODIFIED -> IO.println("Modified: " + file);
+                            case FILE_RENAMED -> IO.println("Renamed: " + file);
+                            default -> IO.println("Other event: " + type + " on " + file);
+                        }
+                        */
+                }
+            });
+            
             var rootT = RootTreeItem.ofFileRef(rootVirtualClass).expandAll().rootTreeItem();
             
             fileTreeView.setRoot(rootT);
             fileTreeView.setShowRoot(false);  
-            
-            IO.println(ancestor);
         }
     }
     

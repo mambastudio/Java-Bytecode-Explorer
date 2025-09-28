@@ -4,8 +4,8 @@
  */
 package com.mamba.bytecodeexplorer.dialog;
 
-import com.mamba.bytecodeexplorer.watcher.FileExtensions;
-import com.mamba.bytecodeexplorer.watcher.FileRef;
+import com.mamba.bytecodeexplorer.file.FileExtensions;
+import com.mamba.bytecodeexplorer.file.FileRef;
 
 /**
  *

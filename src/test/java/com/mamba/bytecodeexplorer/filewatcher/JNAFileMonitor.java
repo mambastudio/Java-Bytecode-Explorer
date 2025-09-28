@@ -4,7 +4,9 @@
  */
 package com.mamba.bytecodeexplorer.filewatcher;
 
-import com.mamba.bytecodeexplorer.filewatcher.FileWatcher.FileEvent;
+import com.mamba.bytecodeexplorer.file.FileWatcher;
+import com.mamba.bytecodeexplorer.file.FileWatcherRegistry;
+import com.mamba.bytecodeexplorer.file.FileWatcher.FileEvent;
 import java.io.File;
 import java.io.IO;
 
@@ -16,11 +18,11 @@ public class JNAFileMonitor {
     
     void main() throws Exception {
         FileWatcher watcher = FileWatcherRegistry.getOrCreate(
-        new File("C:\\Users\\user\\Desktop"),
+        new File("C:\\Users\\joemw\\OneDrive\\Desktop\\Josto2"),
         FileWatcher.Mode.RECURSIVE);
 
         watcher.addEventHandler(e -> {
-            if(e instanceof FileEvent(var type, var file))
+            if(e instanceof FileEvent(FileWatcher.FileEventEnum type, File file))
                 switch (type) {                
                     case FILE_CREATED -> IO.println("Created: " + file);
                     case FILE_DELETED -> IO.println("Deleted: " + file);
