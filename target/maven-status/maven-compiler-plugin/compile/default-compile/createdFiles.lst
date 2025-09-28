@@ -1,8 +1,10 @@
+com\mamba\bytecodeexplorer\file\DelayedDirectoryScanner.class
 com\mamba\bytecodeexplorer\BytecodeExplorer.class
 com\mamba\bytecodeexplorer\file\FileRef$ExploreType.class
 com\mamba\bytecodeexplorer\dialog\FolderTreeDialog.class
 com\mamba\bytecodeexplorer\tree\item\RootTreeItem.class
 com\mamba\bytecodeexplorer\file\FileRef.class
+com\mamba\bytecodeexplorer\file\FileRefWatcherListener.class
 com\mamba\bytecodeexplorer\utility\ListChangeCase.class
 com\mamba\bytecodeexplorer\file\FileExtensions.class
 com\mamba\bytecodeexplorer\file\FileWatcher$FileEvent.class
@@ -10,6 +12,7 @@ com\mamba\bytecodeexplorer\tree\item\RecursiveTreeItem$1.class
 com\mamba\bytecodeexplorer\tree\model\ClassRefModel.class
 com\mamba\bytecodeexplorer\file\FileWatcher$FileEventEnum.class
 com\mamba\bytecodeexplorer\App.class
+com\mamba\bytecodeexplorer\file\FileRefWatcher.class
 com\mamba\bytecodeexplorer\dialog\FolderTreePair.class
 com\mamba\bytecodeexplorer\tree\item\RecursiveTreeItem.class
 com\mamba\bytecodeexplorer\SampleString.class
@@ -20,6 +23,7 @@ com\mamba\bytecodeexplorer\utility\ListChangeCase$ReplacedCase.class
 com\mamba\bytecodeexplorer\utility\ListChangeCase$AddRemoveCase.class
 com\mamba\bytecodeexplorer\tree\FileRefTree.class
 com\mamba\bytecodeexplorer\dialog\FolderTreeDialogPane$1.class
+com\mamba\bytecodeexplorer\file\FileRefWatcher$1.class
 com\mamba\bytecodeexplorer\dialog\FolderTreeDialogPane.class
 com\mamba\bytecodeexplorer\file\FileWatcher.class
 com\mamba\bytecodeexplorer\file\FileWatcher$Mode.class
@@ -31,5 +35,6 @@ com\mamba\bytecodeexplorer\utility\ListChangeUtils.class
 com\mamba\bytecodeexplorer\utility\ListChangeCase$Kind.class
 com\mamba\bytecodeexplorer\tree\AbstractFileRefTree.class
 com\mamba\bytecodeexplorer\file\FileWatcherRegistry.class
+com\mamba\bytecodeexplorer\file\DelayedDirectoryScanner$1.class
 com\mamba\bytecodeexplorer\utility\ListChangeCase$PermutationCase.class
 com\mamba\bytecodeexplorer\tree\model\FileRefModel.class

@@ -19,16 +19,16 @@ public final class FileWatcherRegistry {
         });
 
     static {
-        // Check every 5 seconds
-        healthChecker.scheduleAtFixedRate(FileWatcherRegistry::checkRoots, 2, 2, TimeUnit.SECONDS);
+        // Check every 2 seconds
+        healthChecker.scheduleAtFixedRate(FileWatcherRegistry::checkRoots, 1, 1, TimeUnit.DAYS);
     }
     
     private static void checkRoots() {
         for (File root : watchers.keySet()) {
             System.out.println("Health check on: " + root);
             if (root.isDirectory() && !root.exists()) {
-        //        watchers.get(root).fireRootRemoved();
-          //      watchers.remove(root);
+                watchers.get(root).fireRootRemoved();
+                watchers.remove(root);
             }
         }
     }

@@ -18,7 +18,7 @@ public class JNAFileMonitor {
     
     void main() throws Exception {
         FileWatcher watcher = FileWatcherRegistry.getOrCreate(
-        new File("C:\\Users\\joemw\\OneDrive\\Desktop\\Josto2"),
+        new File("C:\\Users\\joemw\\OneDrive\\Desktop\\Josto2\\Josto"),
         FileWatcher.Mode.RECURSIVE);
 
         watcher.addEventHandler(e -> {
@@ -32,7 +32,7 @@ public class JNAFileMonitor {
                 }
             });
 
-        Thread.sleep(60_000); // keep running for 1 minute
+        Thread.sleep(3600_000); // keep running for 1 minute
 
         FileWatcherRegistry.stopAll();
     }

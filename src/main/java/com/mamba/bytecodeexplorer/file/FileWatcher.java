@@ -2,9 +2,7 @@ package com.mamba.bytecodeexplorer.file;
 
 import com.sun.jna.platform.FileMonitor;
 import java.io.File;
-import java.io.IO;
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,17 +31,17 @@ public class FileWatcher {
         ROOT_REMOVED(-1);
 
 
-        private final int mask;
-        FileEventEnum(int mask) { this.mask = mask; }
-        public int mask() { return mask; }
+        private final int type;
+        FileEventEnum(int type) { this.type = type; }
+        public int type() { return type; }
+        @Override
+        public String toString(){return this.name() + " " +type;}
 
-        public static EnumSet<FileEventEnum> fromMaskSet(int mask) {
-            IO.println(mask);
-            EnumSet<FileEventEnum> set = EnumSet.noneOf(FileEventEnum.class);
-            for (FileEventEnum e : values()) {
-                if ((mask & e.mask) != 0) set.add(e);
-            }
-            return set;
+        public static FileEventEnum from(int type) {           
+            for(FileEventEnum event : FileEventEnum.values())
+                if(event.type == type)
+                    return event;
+            throw new UnsupportedOperationException("File event not recognised: " +type);           
         }
     }
 
@@ -88,19 +86,17 @@ public class FileWatcher {
         if (listener != null) return; // already started
 
         listener = fe -> {
-            EnumSet<FileEventEnum> events = FileEventEnum.fromMaskSet(fe.getType());
+            FileEventEnum event = FileEventEnum.from(fe.getType());
             File parent = fe.getFile().getParentFile();
 
             if (mode == Mode.NON_RECURSIVE && (parent == null || !parent.equals(root))) {
                 return;
             }
 
-            for (FileEventEnum e : events) {
-                FileEvent wrapped = new FileEvent(e, fe.getFile());
-                for (var handler : handlers) {
-                    handler.accept(wrapped);
-                }
-            }
+            FileEvent wrapped = new FileEvent(event, fe.getFile());
+            for (var handler : handlers) {
+                handler.accept(wrapped);
+            }            
         };
 
         monitor.addFileListener(listener);
