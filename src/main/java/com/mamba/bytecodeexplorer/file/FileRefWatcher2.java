@@ -4,6 +4,7 @@
  */
 package com.mamba.bytecodeexplorer.file;
 
+import com.mamba.bytecodeexplorer.file.FileRefWatcher2.FileEventListener.FileEvent;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.ClosedWatchServiceException;
@@ -116,7 +117,7 @@ public class FileRefWatcher2 {
     }
     
     @SuppressWarnings("unchecked")
-    private FileEventListener.FileEvent toFileEvent(Path dir, WatchEvent<?> event) {
+    private FileEvent toFileEvent(Path dir, WatchEvent<?> event) {
         WatchEvent.Kind<?> kind = event.kind();
 
         if (kind == OVERFLOW) {
@@ -126,9 +127,9 @@ public class FileRefWatcher2 {
         Path file = ((WatchEvent<Path>) event).context();
         Path absolute = dir.resolve(file);
 
-        if (kind == ENTRY_CREATE) return new FileEventListener.FileEvent.Created(dir, absolute);
-        if (kind == ENTRY_DELETE) return new FileEventListener.FileEvent.Deleted(dir, absolute);
-        if (kind == ENTRY_MODIFY) return new FileEventListener.FileEvent.Modified(dir, absolute);
+        if (kind == ENTRY_CREATE) return new FileEvent.Created(dir, absolute);
+        if (kind == ENTRY_DELETE) return new FileEvent.Deleted(dir, absolute);
+        if (kind == ENTRY_MODIFY) return new FileEvent.Modified(dir, absolute);
 
         throw new IllegalArgumentException("Unknown event: " + kind);
     }
