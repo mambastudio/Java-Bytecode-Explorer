@@ -210,7 +210,7 @@ public class FileRefWatcher {
                 // reset key and remove from set if directory no longer accessible (like when it's deleted)
                 boolean valid = key.reset();
                 if (!valid) {
-                    IO.println("kaudasdf");
+                    IO.println("invalid");
                     keys.remove(key);
 
                     // all directories are inaccessible

@@ -6,8 +6,10 @@ package com.mamba.bytecodeexplorer.filewatcher;
 
 import com.mamba.bytecodeexplorer.file.FileRef;
 import com.mamba.bytecodeexplorer.file.FileRefWatcher;
+import com.mamba.bytecodeexplorer.file.FileRefWatcher2;
 import com.mamba.bytecodeexplorer.file.FileRefWatcherListener;
 import java.io.IO;
+import java.nio.file.Paths;
 
 /**
  *
@@ -15,20 +17,26 @@ import java.io.IO;
  */
 public class FileWatcherTest {
     void main() throws InterruptedException{
+        test2();
+    }
+    
+    void test1() throws InterruptedException{
         FileRefWatcher watcher = new FileRefWatcher();
-        watcher.setMonitor(new FileRef("C:\\Users\\joemw\\OneDrive\\Desktop\\Josto2\\Josto"));
+        watcher.setMonitor(new FileRef("C:\\Users\\user\\Desktop\\Kubafu"));
         watcher.registerListener(new FileRefWatcherListener(){
             @Override
             public void onCreate(FileRef parent, FileRef child) {
-                IO.println("asdfasdf");
+                IO.println("created");
             }
 
             @Override
             public void onModify(FileRef parent, FileRef child) {
+                IO.println("modify");
             }
 
             @Override
             public void onDelete(FileRef parent, FileRef child) {
+                IO.println("deleted");
             }
 
             @Override
@@ -39,6 +47,15 @@ public class FileWatcherTest {
         });
         watcher.processEvents();
         
+        Thread.sleep(3600_000); // keep running for 1 minute
+    }
+    
+    void test2() throws InterruptedException{
+        FileRefWatcher2 watcher = FileRefWatcher2.getInstance();
+        watcher.watch(Paths.get("C:\\Users\\user\\Desktop\\Kubafu"), e->{
+            IO.println(e+ " ");
+            
+        });
         Thread.sleep(3600_000); // keep running for 1 minute
     }
 }

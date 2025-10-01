@@ -5,6 +5,7 @@
 package com.mamba.bytecodeexplorer.file;
 
 import com.mamba.bytecodeexplorer.file.FileRefWatcher2.FileEventListener.FileEvent;
+import java.io.IO;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.ClosedWatchServiceException;
@@ -88,27 +89,30 @@ public class FileRefWatcher2 {
     private void processEvents() {
         try {
             while (true) {
-                WatchKey key = watcher.take(); //blocking, if nothing happens it will block until an event occurs
+                WatchKey key = watcher.take(); //blocking, if nothing happens it will block until an event occurs or even when monitored folder is deleted              
                 Path dir = (Path) key.watchable();
-
+                
                 for (WatchEvent<?> event : key.pollEvents()) {
-                    FileEventListener.FileEvent fe = toFileEvent(dir, event);
+                    var fe = toFileEvent(dir, event);
                     listeners.getOrDefault(dir, List.of())
                              .forEach(l -> l.onEvent(fe));
                 }
-
+                
                 if (!key.reset()) {
-                    // directory inaccessible
-                    listeners.remove(dir);
-                    listeners.getOrDefault(dir, List.of())
-                            .forEach(l -> {
-                                try{ //onEvent implementation might have an exception e.g. null or something else, which might kill the thread hence good to trap it
-                                    l.onEvent(new FileEventListener.FileEvent.KeyInvalid(dir));
-                                }
-                                catch (Exception ex) { 
-                                    Logger.getLogger(FileRefWatcher2.class.getName()).log(Level.WARNING, "Listener failed", ex);                                    
-                                }
-                            });
+                    // collect listeners first
+                    List<FileEventListener> ls = listeners.remove(dir);
+                    keys.remove(dir);
+
+                    if (ls != null) {
+                        for (FileEventListener l : ls) {
+                            try {
+                                l.onEvent(new FileEventListener.FileEvent.KeyInvalid(dir));
+                            } catch (Exception ex) {
+                                Logger.getLogger(FileRefWatcher2.class.getName())
+                                      .log(Level.WARNING, "Listener failed", ex);
+                            }
+                        }
+                    }
                 }
             }
         } catch (InterruptedException | ClosedWatchServiceException e) {
