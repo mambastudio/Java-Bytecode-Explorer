@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +32,14 @@ import java.util.logging.Logger;
  * @author jmburu
  */
 public class FileRefWatcher2 {
+    
+    private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+            r -> {
+                Thread t = new Thread(r);
+                t.setDaemon(true); // This makes the thread non-blocking for JVM shutdown
+                t.setName("DelayedSchedule-Thread");
+                return t;
+            });
     
     private static FileRefWatcher2 INSTANCE = null;
 
