@@ -21,20 +21,27 @@ public class ClassRefModel extends AbstractFileRefTree<ClassRefModel>{
     
     public ClassRefModel(FileRef ref, boolean createChildren){
         Objects.requireNonNull(ref);        
-        this.ref = ref;        
-       
-        if(createChildren)
-            if(!ref.isDirectory())
-                this.children = FXCollections.observableArrayList(); //TODO
-            else
-            {
-                this.children = FXCollections.observableArrayList();
-                for(FileRef r : ref.children(".class"))
-                    if(r.isLeaf())
-                        this.children.add(new ClassRefModel(r, false));
-            }    
-        else
-            this.children = FXCollections.observableArrayList(); //TODO
+        this.ref = ref;      
+        
+        switch(createChildren){
+            case true -> {
+                switch(isLeaf()){
+                    case true -> this.children = FXCollections.emptyObservableList();
+                    case false -> {
+                        this.children = FXCollections.observableArrayList();
+                        for(FileRef r : ref.children(".class"))
+                            if(r.isLeaf())
+                                this.children.add(new ClassRefModel(r, false));
+                    }
+                }
+            }
+            case false ->{
+                switch(isLeaf()){
+                    case true -> this.children = FXCollections.emptyObservableList();
+                    case false -> this.children = FXCollections.observableArrayList();
+                }
+            }
+        }
     }
     
     public ClassRefModel(){
@@ -49,7 +56,7 @@ public class ClassRefModel extends AbstractFileRefTree<ClassRefModel>{
     public boolean addChild(ClassRefModel model){        
         if(model.equals(this))
             return false;        
-        if(model.ref().isDescendantOf(ref)){
+        if(model.isDescendantOf(this)){
             if(children.contains(model))
                 return false;
             children.add(model);

@@ -4,6 +4,8 @@
  */
 package com.mamba.bytecodeexplorer.tree;
 
+import com.mamba.bytecodeexplorer.file.FileRef;
+
 /**
  *
  * @author user
@@ -11,12 +13,20 @@ package com.mamba.bytecodeexplorer.tree;
  */
 public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
         implements FileRefTree<Y> {
+    
+    public boolean isDirectory(){        
+        return ref().isDirectory();
+    }
+    
+    public boolean isLeaf(){
+        return ref().isLeaf();
+    }
 
     @Override
     public final boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof FileRefTree<?> other)) return false;
-        return ref() != null && ref().equals(other.ref());
+        return  this == obj ||
+                (obj instanceof FileRefTree<?> other &&
+                ref() != null && ref().equals(other.ref()));
     }
 
     @Override
@@ -24,9 +34,10 @@ public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
         return ref() != null ? ref().hashCode() : 0;
     }
     
+    
     @Override
     public String toString(){
-        String ch = this.ref().name();
+        var ch = this.ref().name();
         /*
         if(!children().isEmpty())
             ch = this.ref().name()+ " " +children().toString();       

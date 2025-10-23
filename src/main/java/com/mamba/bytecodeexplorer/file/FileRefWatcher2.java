@@ -5,7 +5,6 @@
 package com.mamba.bytecodeexplorer.file;
 
 import com.mamba.bytecodeexplorer.file.FileRefWatcher2.FileEventListener.FileEvent;
-import java.io.IO;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.ClosedWatchServiceException;
@@ -20,10 +19,12 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,12 +42,15 @@ public class FileRefWatcher2 {
                 return t;
             });
     
+    //Future LazyConstant (best to use it if one doesn't like nulls)
     private static FileRefWatcher2 INSTANCE = null;
 
     private final WatchService watcher;
     private final Map<Path, List<FileEventListener>> listeners = new ConcurrentHashMap<>();
     private final Map<Path, WatchKey> keys = new ConcurrentHashMap<>();
     private Thread thread;
+    
+    private long delayTimeMilliseconds = 100;
     
     private FileRefWatcher2() throws IOException {
         this.watcher = FileSystems.getDefault().newWatchService();
@@ -58,6 +62,7 @@ public class FileRefWatcher2 {
         thread.start();
     }
     
+    //Change to future LazyConstant
     public static synchronized FileRefWatcher2 getInstance() {
         if(INSTANCE == null)
             try {
@@ -70,6 +75,12 @@ public class FileRefWatcher2 {
     }
     
     public void watch(Path dir, FileEventListener listener) {
+        Objects.requireNonNull(dir);
+        Objects.requireNonNull(dir);
+        
+        if(!dir.toFile().exists())
+            throw new IllegalArgumentException("Missing file: " + dir);
+        
         listeners.computeIfAbsent(dir, d -> {
             try {
                 WatchKey key = d.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
@@ -81,10 +92,11 @@ public class FileRefWatcher2 {
         }).add(listener);
     }
 
-    public void unwatch(Path dir, FileEventListener listener) {
+    public void unwatch(Path dir, FileEventListener... feListeners) {
         List<FileEventListener> list = listeners.get(dir);
         if (list != null) {
-            list.remove(listener);
+            if(feListeners != null)
+                list.removeAll(List.of(feListeners));            
             if (list.isEmpty()) {
                 listeners.remove(dir);
                 WatchKey key = keys.remove(dir);
@@ -95,7 +107,7 @@ public class FileRefWatcher2 {
         }
     }
     
-    //called by the thread and blocks at watcher.take() until a new even occurs
+    //called by the thread and blocks at watcher.take() until a new event occurs
     private void processEvents() {
         try {
             while (true) {
@@ -105,7 +117,10 @@ public class FileRefWatcher2 {
                 for (WatchEvent<?> event : key.pollEvents()) {
                     var fe = toFileEvent(dir, event);
                     listeners.getOrDefault(dir, List.of())
-                             .forEach(l -> l.onEvent(fe));
+                             .forEach(l -> scheduler.schedule(
+                                     () -> l.onEvent(fe), 
+                                     delayTimeMilliseconds, 
+                                     TimeUnit.MILLISECONDS));
                 }
                 
                 if (!key.reset()) {
@@ -116,7 +131,11 @@ public class FileRefWatcher2 {
                     if (ls != null) {
                         for (FileEventListener l : ls) {
                             try {
-                                l.onEvent(new FileEventListener.FileEvent.KeyInvalid(dir));
+                                scheduler.schedule(
+                                        () -> l.onEvent(new FileEventListener.FileEvent.KeyInvalid(dir)), 
+                                        delayTimeMilliseconds, 
+                                        TimeUnit.MILLISECONDS);
+                                
                             } catch (Exception ex) {
                                 Logger.getLogger(FileRefWatcher2.class.getName())
                                       .log(Level.WARNING, "Listener failed", ex);
@@ -128,6 +147,10 @@ public class FileRefWatcher2 {
         } catch (InterruptedException | ClosedWatchServiceException e) {
             // exit loop gracefully
         }
+    }
+    
+    public void setEventDelayedTo(long milliseconds){
+        this.delayTimeMilliseconds = milliseconds;
     }
     
     @SuppressWarnings("unchecked")

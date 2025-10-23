@@ -15,6 +15,21 @@ import javafx.collections.ObservableList;
  */
 public interface Tree<X, Y extends Tree<X,Y>> {
     X ref();
-    ObservableList<Y> children();    
-    Optional<Y> findInTree(X x);
+    ObservableList<Y> children();   
+    
+    Optional<Y> findInTree(X x);    
+    default Optional<Y> findInTree(Y y){
+        return findInTree(y.ref());
+    }
+    
+    default boolean exist(Y y){
+        var result = findInTree(y);
+        return result.isPresent();
+    }
+    default boolean exist(X x){
+        var result = findInTree(x);
+        return result.isPresent();
+    }
+    
+    
 }

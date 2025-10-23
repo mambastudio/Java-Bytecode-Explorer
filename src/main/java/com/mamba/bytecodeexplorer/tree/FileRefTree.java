@@ -14,6 +14,14 @@ import java.util.Optional;
  */
 public interface FileRefTree<Y extends FileRefTree<Y>> extends Tree<FileRef, Y>{
     
+    default boolean isDescendantOf(Y parent){
+        return ref().isDescendantOf(parent.ref());
+    }
+    
+    default boolean isAncestorOf(Y child) {
+        return ref().isAncestorOf(child.ref());
+    }
+    
     @Override
     default Optional<Y> findInTree(FileRef target) {
         if(target == null)
@@ -28,21 +36,22 @@ public interface FileRefTree<Y extends FileRefTree<Y>> extends Tree<FileRef, Y>{
             return Optional.empty();
         
         for (Y child : children()) {
-            Optional<Y> match = child.findInTree(target);
+            var match = child.findInTree(target);
             if (match.isPresent()) return match;
         }
 
         return Optional.empty();
+    }    
+    
+    default boolean remove(Y y){
+        if(exist(y))
+            throw new UnsupportedOperationException("method remove not yet supported");
+        return false;
     }
     
-    default boolean equalsByRef(Object obj) {
-        return this == obj ||
-            (obj instanceof FileRefTree<?> other &&
-             ref() != null && ref().equals(other.ref()));
-    }
-    
-
-    default int hashCodeByRef() {
-        return ref() != null ? ref().hashCode() : 0;
+    default boolean remove(FileRef ref){
+        if(exist(ref))
+            throw new UnsupportedOperationException("method remove not yet supported");
+        return false;
     }
 }

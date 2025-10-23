@@ -52,7 +52,8 @@ public class FileWatcherTest {
     
     void test2() throws InterruptedException{
         FileRefWatcher2 watcher = FileRefWatcher2.getInstance();
-        watcher.watch(Paths.get("C:\\Users\\user\\Desktop\\Kubafu"), e->{
+        watcher.setEventDelayedTo(200);
+        watcher.watch(Paths.get("C:\\Users\\joemw\\OneDrive\\Desktop\\Josto2"), e->{
             IO.println(e+ " ");
             
         });

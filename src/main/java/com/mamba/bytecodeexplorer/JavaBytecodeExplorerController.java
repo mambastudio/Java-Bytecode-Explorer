@@ -23,7 +23,6 @@ import com.mamba.bytecodeexplorer.tree.model.ClassRefModel;
 import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
 import java.io.File;
 import java.io.IO;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Application;
@@ -105,12 +104,14 @@ public class JavaBytecodeExplorerController implements Initializable {
         });          
     }
     
+    
+    //Update UI tree for classes files
     private void setTreeItem(FolderTreePair f){
         if(f instanceof FolderTreePair(FileRef ancestorFolder, FileRef parentFolder, _)){         
             var rootVirtualClass = new ClassRefModel();
             
             var ancestor = new ClassRefModel(ancestorFolder, false);   
-            var addedParentToAncestor = ancestor.addChild(new ClassRefModel(parentFolder, true));
+            var addedParentToAncestor = ancestor.addChild(new ClassRefModel(parentFolder, true)); //It might fail, hence we resolve one possibility below
             if(!addedParentToAncestor){ //did it fail?
                 if(ancestorFolder.equals(parentFolder)) //why? is it because ancestor is same as parent folder
                     rootVirtualClass.addChild(new ClassRefModel(parentFolder, true)); //add to rootvirtual if true
@@ -118,6 +119,7 @@ public class JavaBytecodeExplorerController implements Initializable {
             else
                 rootVirtualClass.addChild(ancestor); //since parent added to ancestor, add now to virtual root
             
+            //TODO: Replace with FileRefWatcher2, since we aren't doing recursive monitoring automatically (hierarchy folders might not be direct children)
             FileWatcher watcher = FileWatcherRegistry.getOrCreate(
                             ancestor.ref.file(),
                             FileWatcher.Mode.RECURSIVE);  
@@ -134,15 +136,6 @@ public class JavaBytecodeExplorerController implements Initializable {
                             default -> IO.println("Other event: " + type + " on " + file);
                         }
                     }
-                        /*
-                        switch (type) {
-                            case FILE_CREATED -> IO.println("Created: " + file);
-                            case FILE_DELETED -> IO.println("Deleted: " + file);
-                            case FILE_MODIFIED -> IO.println("Modified: " + file);
-                            case FILE_RENAMED -> IO.println("Renamed: " + file);
-                            default -> IO.println("Other event: " + type + " on " + file);
-                        }
-                        */
                 }
             });
             
