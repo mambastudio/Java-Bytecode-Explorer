@@ -4,8 +4,8 @@
  */
 package com.mamba.bytecodeexplorer.tree.item;
 
-import com.mamba.bytecodeexplorer.tree.FileRefTree;
-import com.mamba.bytecodeexplorer.tree.Tree;
+import com.mamba.bytecodeexplorer.core.FileRefTree;
+import com.mamba.bytecodeexplorer.core.Tree;
 import java.util.function.Function;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;

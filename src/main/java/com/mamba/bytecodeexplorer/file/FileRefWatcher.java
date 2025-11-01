@@ -4,7 +4,7 @@
  */
 package com.mamba.bytecodeexplorer.file;
 
-import com.mamba.bytecodeexplorer.tree.FileRefTree;
+import com.mamba.bytecodeexplorer.core.FileRefTree;
 import java.io.IO;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;

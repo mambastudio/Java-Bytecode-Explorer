@@ -4,7 +4,7 @@
  */
 package com.mamba.bytecodeexplorer.tree.item;
 
-import com.mamba.bytecodeexplorer.tree.FileRefTree;
+import com.mamba.bytecodeexplorer.core.FileRefTree;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.util.Callback;
