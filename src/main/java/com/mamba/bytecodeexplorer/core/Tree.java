@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package com.mamba.bytecodeexplorer.tree;
+package com.mamba.bytecodeexplorer.core;
 
 import java.util.Optional;
 import javafx.collections.ObservableList;
@@ -22,6 +22,14 @@ public interface Tree<X, Y extends Tree<X,Y>> {
         return findInTree(y.ref());
     }
     
+    default Relation<Y> findInTree2(Y y){
+        return null;
+    }
+    
+    default Relation<Y> findInTree2(X x){
+        return null;
+    } 
+    
     default boolean exist(Y y){
         var result = findInTree(y);
         return result.isPresent();
@@ -31,5 +39,7 @@ public interface Tree<X, Y extends Tree<X,Y>> {
         return result.isPresent();
     }
     
-    
+    default boolean hasChildren(){
+        return !children().isEmpty();
+    }
 }
