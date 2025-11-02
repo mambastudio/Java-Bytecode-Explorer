@@ -43,26 +43,7 @@ public interface FileRefTree<Y extends FileRefTree<Y>> extends Tree<FileRef, Y>{
         return Optional.empty();
     } 
     
-    @Override
-    default Relation<Y> findInTree2(FileRef target) {
-        if(target == null)
-            return Relation.empty();
-        
-        //check node ref for this is equal to target
-        if (ref() != null && ref().equals(target))
-            return Relation.asChild((Y) this);
-        
-        //if not descendant, no point of searching deeper
-        if(!target.isDescendantOf(ref()))
-            return Optional.empty();
-        
-        for (Y child : children()) {
-            var match = child.findInTree(target);
-            if (match.isPresent()) return match;
-        }
-
-        return Optional.empty();
-    }    
+    
     
     default boolean remove(Y y){
         if(exist(y))

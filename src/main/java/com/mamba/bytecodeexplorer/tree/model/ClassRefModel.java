@@ -5,6 +5,7 @@
 package com.mamba.bytecodeexplorer.tree.model;
 
 import com.mamba.bytecodeexplorer.core.AbstractFileRefTree;
+import com.mamba.bytecodeexplorer.core.Relation;
 import com.mamba.bytecodeexplorer.file.FileRef;
 import java.util.Objects;
 import javafx.collections.FXCollections;
@@ -69,4 +70,32 @@ public class ClassRefModel extends AbstractFileRefTree<ClassRefModel>{
     public ObservableList<ClassRefModel> children() {
         return children;
     }
+    
+    @Override
+    public Relation<ClassRefModel> findInTree2(FileRef target) {
+        var ctarget = new ClassRefModel(target, false);
+        
+        if(target == null)
+            return Relation.empty();
+        
+        //check node ref for this is equal to target
+        if (ref() != null && ref().equals(target))
+            return Relation.asChild(this);
+        
+        //if not descendant, no point of searching deeper
+        if(!target.isDescendantOf(ref()))
+            return Relation.empty();
+        
+        //check if children have any match and return
+        if(children().contains(ctarget))
+            return new Relation(this, ctarget);
+        
+        //go next depth
+        for (var child : children()) {
+            var match = child.findInTree2(target);
+            if (match.isPresent()) return match;
+        }
+
+        return Relation.empty();
+    }   
 }

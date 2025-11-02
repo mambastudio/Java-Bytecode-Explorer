@@ -4,8 +4,6 @@
  */
 package com.mamba.bytecodeexplorer.core;
 
-import com.mamba.bytecodeexplorer.file.FileRef;
-
 /**
  *
  * @author user
@@ -21,7 +19,33 @@ public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
     public boolean isLeaf(){
         return ref().isLeaf();
     }
+    
+    @Override
+    public Relation<Y> findInTree2(Y target) {
+        if(target == null)
+            return Relation.empty();
+        
+        //check node ref for this is equal to target
+        if (ref() != null && ref().equals(target))
+            return Relation.asChild(target);
+        
+        //if not descendant, no point of searching deeper
+        if(!target.ref().isDescendantOf(ref()))
+            return Relation.empty();
+        
+        //check if children have any match and return
+        if(children().contains(target))
+            return new Relation(this, target);
+        
+        //go next depth
+        for (var child : children()) {
+            var match = child.findInTree2(target);
+            if (match.isPresent()) return match;
+        }
 
+        return Relation.empty();
+    }    
+    
     @Override
     public final boolean equals(Object obj) {
         return  this == obj ||

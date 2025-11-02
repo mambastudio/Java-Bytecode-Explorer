@@ -22,7 +22,7 @@ public interface Tree<X, Y extends Tree<X,Y>> {
         return findInTree(y.ref());
     }
     
-    default Relation<Y> findInTree2(Y y){
+    default Relation<Y> findInTree2(Y y){      
         return null;
     }
     
@@ -41,5 +41,9 @@ public interface Tree<X, Y extends Tree<X,Y>> {
     
     default boolean hasChildren(){
         return !children().isEmpty();
+    }
+    
+    default boolean remove(Y y){
+        return children().remove(y);
     }
 }
