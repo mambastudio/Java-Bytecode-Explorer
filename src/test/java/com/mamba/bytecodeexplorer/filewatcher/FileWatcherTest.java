@@ -26,22 +26,22 @@ public class FileWatcherTest {
         watcher.registerListener(new FileRefWatcherListener(){
             @Override
             public void onCreate(FileRef parent, FileRef child) {
-                IO.println("created");
+                IO.println("created: " +child.name());
             }
 
             @Override
             public void onModify(FileRef parent, FileRef child) {
-                IO.println("modify");
+                IO.println("modify: " +child.name());
             }
 
             @Override
             public void onDelete(FileRef parent, FileRef child) {
-                IO.println("deleted");
+                IO.println("deleted: " +child.name());
             }
 
             @Override
             public void overflow(FileRef root) {
-                IO.println(root.name() +" deleted");
+                IO.println(root.name() +" deleted: ");
             }
             
         });
@@ -53,7 +53,7 @@ public class FileWatcherTest {
     void test2() throws InterruptedException{
         FileRefWatcher2 watcher = FileRefWatcher2.getInstance();
         watcher.setEventDelayedTo(200);
-        watcher.watch(Paths.get("C:\\Users\\joemw\\OneDrive\\Desktop\\Josto2"), e->{
+        watcher.watch(Paths.get("C:\\Users\\user\\Desktop\\Kubafu"), e->{
             IO.println(e+ " ");
             
         });

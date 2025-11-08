@@ -4,11 +4,12 @@
  */
 package com.mamba.bytecodeexplorer.file;
 
+import com.mamba.bytecodeexplorer.core.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.file.FileRefWatcher2.FileEventListener.FileEvent;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
@@ -74,35 +75,90 @@ public class FileRefWatcher2 {
         return INSTANCE;
     }
     
+    public boolean isWatched(Path path){
+        return keys.containsKey(path);
+    }
+    
     public void watch(Path dir, FileEventListener listener) {
-        Objects.requireNonNull(dir);
-        Objects.requireNonNull(dir);
-        
-        if(!dir.toFile().exists())
-            throw new IllegalArgumentException("Missing file: " + dir);
-        
-        listeners.computeIfAbsent(dir, d -> {
+        Objects.requireNonNull(dir, "dir must not be null");
+        Objects.requireNonNull(listener, "listener must not be null");
+
+        if (!Files.isDirectory(dir))
+            throw new IllegalArgumentException("Not a directory: " + dir);
+
+        List<FileEventListener> list = listeners.computeIfAbsent(dir, d -> {
             try {
                 WatchKey key = d.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
                 keys.put(d, key);
+                return new CopyOnWriteArrayList<>();
             } catch (IOException e) {
-                throw new UncheckedIOException(e);
+                throw new IllegalStateException("Failed to register watcher for " + d, e);
             }
-            return new CopyOnWriteArrayList<>();
-        }).add(listener);
+        });
+
+        if (!list.contains(listener)) {
+            list.add(listener);
+        }
     }
+    
+    public void watchTree(AbstractFileRefTree<?> tree, FileEventListener listener){
+        Objects.requireNonNull(tree, "Tree should not be null");
+        Objects.requireNonNull(listener, "Listener should not be null");
+        
+        if (tree.ref() == null || !tree.ref().isDirectory())
+            return;
+
+        var dir = tree.ref().path();
+        watch(dir, listener); // your existing method
+
+        // Recursively register children that are directories
+        for (var child : tree.children()) {
+            var childRef = child.ref();
+            if (childRef != null && childRef.isDirectory()) {
+                watchTree((AbstractFileRefTree<?>) child, listener);
+            }
+        }
+    }
+    
 
     public void unwatch(Path dir, FileEventListener... feListeners) {
+        Objects.requireNonNull(dir, "dir must not be null");
+        
         List<FileEventListener> list = listeners.get(dir);
-        if (list != null) {
-            if(feListeners != null)
-                list.removeAll(List.of(feListeners));            
-            if (list.isEmpty()) {
-                listeners.remove(dir);
-                WatchKey key = keys.remove(dir);
-                if (key != null) {
-                    key.cancel();
-                }
+        if (list == null) return;
+
+        if (feListeners == null || feListeners.length == 0) {
+            // Explicit full unwatch request
+            listeners.remove(dir);
+            WatchKey key = keys.remove(dir);
+            if (key != null) key.cancel();
+            return;
+        }
+
+        list.removeAll(List.of(feListeners));
+
+        if (list.isEmpty()) {
+            listeners.remove(dir);
+            WatchKey key = keys.remove(dir);
+            if (key != null) key.cancel();
+        }
+    }
+        
+    public void unwatchTree(AbstractFileRefTree<?> tree) {
+        Objects.requireNonNull(tree, "Tree should not be null");
+
+        if (tree.ref() == null || !tree.ref().isDirectory())
+            return;
+
+        // 1. Unregister this directory
+        var dir = tree.ref().path();
+        unwatch(dir); // your existing method to cancel the watch key
+
+        // 2. Recursively unregister children that are directories
+        for (var child : tree.children()) {
+            var childRef = child.ref();
+            if (childRef != null && childRef.isDirectory()) {
+                unwatchTree((AbstractFileRefTree<?>) child);
             }
         }
     }

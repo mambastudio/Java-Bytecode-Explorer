@@ -4,6 +4,8 @@
  */
 package com.mamba.bytecodeexplorer.core;
 
+import com.mamba.bytecodeexplorer.file.FileRef;
+
 /**
  *
  * @author user
@@ -19,9 +21,9 @@ public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
     public boolean isLeaf(){
         return ref().isLeaf();
     }
-    
+        
     @Override
-    public Relation<Y> findInTree2(Y target) {
+    public Relation<FileRef> findInTree2(FileRef target) {        
         if(target == null)
             return Relation.empty();
         
@@ -30,12 +32,12 @@ public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
             return Relation.asChild(target);
         
         //if not descendant, no point of searching deeper
-        if(!target.ref().isDescendantOf(ref()))
+        if(!target.isDescendantOf(ref()))
             return Relation.empty();
         
         //check if children have any match and return
-        if(children().contains(target))
-            return new Relation(this, target);
+        if(childrenContain(target))
+            return new Relation<>(this.ref(), target);
         
         //go next depth
         for (var child : children()) {
@@ -44,7 +46,33 @@ public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
         }
 
         return Relation.empty();
-    }    
+    }   
+    
+    @Override
+    public boolean remove(FileRef target){
+        if(target == null)
+            return false;
+        
+        //check node ref for this is equal to target
+        if (ref() != null && ref().equals(target))
+            return false;
+        
+        //if not descendant, no point of searching deeper
+        if(!target.isDescendantOf(ref()))
+            return false;
+        
+        //check if children have been removed
+        if(removeChild(target))
+            return true;         
+        
+        //if not removed, go to next depth
+        for (var child : children()) {
+            boolean removed = child.remove(target);
+            if (removed) return true;
+        }
+
+        return false;
+    }
     
     @Override
     public final boolean equals(Object obj) {
