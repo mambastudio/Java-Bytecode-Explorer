@@ -38,6 +38,8 @@ public class FileRefWatcher2 {
     // ============================================================
     // Internal helper types (kept inside the same file for portability)
     // ============================================================
+    
+    public interface FileRefMeta{}
 
     /**
      * Mutable state for an actively watched directory.
@@ -46,7 +48,8 @@ public class FileRefWatcher2 {
     private static final class DirState {
         WatchKey key;
         final List<FileEventListener> listeners = new CopyOnWriteArrayList<>();
-
+        FileRefMeta meta; // metadata associated with this directory
+        
         DirState(WatchKey key) {
             this.key = key;
         }
@@ -57,7 +60,7 @@ public class FileRefWatcher2 {
      * Stores the timestamp of invalidation and the listeners
      * that must be restored if the directory reappears.
      */
-    private record InvalidationInfo(long timestamp, List<FileEventListener> retainedListeners) {}
+    private record InvalidationInfo(long timestamp, List<FileEventListener> retainedListeners, FileRefMeta retainedMeta) {}
     
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
             r -> {
@@ -105,6 +108,16 @@ public class FileRefWatcher2 {
            
     public boolean isWatched(Path path){
         return states.containsKey(path);
+    }
+    
+    public FileRefMeta getMeta(Path dir) {
+        DirState ds = states.get(dir);
+        return ds != null ? ds.meta : null;
+    }
+
+    public void setMeta(Path dir, FileRefMeta meta) {
+        DirState ds = states.get(dir);
+        if (ds != null) ds.meta = meta;
     }
     
     public void watch(Path dir, FileEventListener listener) {
@@ -211,7 +224,8 @@ public class FileRefWatcher2 {
             invalidations.put(dir,
                     new InvalidationInfo(
                             System.currentTimeMillis(),
-                            state.listeners));
+                            state.listeners,
+                            state.meta));
 
             // notify listeners about invalidation
             for (FileEventListener l : state.listeners) {
