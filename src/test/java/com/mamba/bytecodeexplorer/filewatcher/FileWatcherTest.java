@@ -8,6 +8,7 @@ import com.mamba.bytecodeexplorer.file.FileRef;
 import com.mamba.bytecodeexplorer.file.FileRefWatcher;
 import com.mamba.bytecodeexplorer.file.FileRefWatcher2;
 import com.mamba.bytecodeexplorer.file.FileRefWatcherListener;
+import com.mamba.bytecodeexplorer.tree.model.ClassRefModel;
 import java.io.IO;
 import java.nio.file.Paths;
 
@@ -17,7 +18,7 @@ import java.nio.file.Paths;
  */
 public class FileWatcherTest {
     void main() throws InterruptedException{
-        test2();
+        test3();
     }
     
     void test1() throws InterruptedException{
@@ -51,12 +52,25 @@ public class FileWatcherTest {
     }
     
     void test2() throws InterruptedException{
-        FileRefWatcher2 watcher = FileRefWatcher2.getInstance();
+        FileRefWatcher2 watcher = new FileRefWatcher2();
         watcher.setEventDelayedTo(200);
         watcher.watch(Paths.get("C:\\Users\\user\\Desktop\\Kubafu"), e->{
             IO.println(e+ " ");
             
         });
         Thread.sleep(3600_000); // keep running for 1 minute
+    }
+    
+    void test3() throws InterruptedException{
+        var watcher = new FileRefWatcher2();
+        var root = new ClassRefModel(new FileRef("C:\\Users\\user\\Documents\\GitHub\\mambaui-fx"), false);
+        var folder = new ClassRefModel(new FileRef("C:\\Users\\user\\Documents\\GitHub\\mambaui-fx\\target\\classes\\com\\mamba\\mambaui\\base"), true);
+        root.addChild(folder);
+        
+        watcher.watchTree(root, e->{
+            IO.println(e+ " ");
+        });
+        
+        Thread.sleep(3600_000);
     }
 }

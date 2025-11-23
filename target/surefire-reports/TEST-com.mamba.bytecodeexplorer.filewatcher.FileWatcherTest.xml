@@ -1,62 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.mamba.bytecodeexplorer.filewatcher.FileWatcherTest" time="0.01" tests="0" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.mamba.bytecodeexplorer.filewatcher.FileWatcherTest" time="0.011" tests="0" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="23"/>
     <property name="sun.cpu.isalist" value="amd64"/>
     <property name="sun.jnu.encoding" value="Cp1252"/>
-    <property name="java.class.path" value="C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\target\test-classes;C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\target\classes;C:\Users\joemw\.m2\repository\org\openjfx\javafx-base\24\javafx-base-24.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-base\24\javafx-base-24-win.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-controls\24\javafx-controls-24.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-controls\24\javafx-controls-24-win.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-graphics\24\javafx-graphics-24.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-graphics\24\javafx-graphics-24-win.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-fxml\24\javafx-fxml-24-win.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-incubator-input\24\javafx-incubator-input-24-win.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-incubator-richtext\24\javafx-incubator-richtext-24-win.jar;C:\Users\joemw\.m2\repository\io\github\mkpaz\atlantafx-base\2.0.1\atlantafx-base-2.0.1.jar;C:\Users\joemw\.m2\repository\com\mamba\mambaui-fx\0.1\mambaui-fx-0.1.jar;C:\Users\joemw\.m2\repository\org\kordamp\ikonli\ikonli-material2-pack\12.4.0\ikonli-material2-pack-12.4.0.jar;C:\Users\joemw\.m2\repository\org\kordamp\ikonli\ikonli-core\12.4.0\ikonli-core-12.4.0.jar;C:\Users\joemw\.m2\repository\org\kordamp\ikonli\ikonli-javafx\12.4.0\ikonli-javafx-12.4.0.jar;C:\Users\joemw\.m2\repository\net\java\dev\jna\jna-jpms\5.18.0\jna-jpms-5.18.0.jar;C:\Users\joemw\.m2\repository\net\java\dev\jna\jna-platform-jpms\5.18.0\jna-platform-jpms-5.18.0.jar;"/>
+    <property name="java.class.path" value="C:\Users\user\Documents\GitHub\Java-Bytecode-Explorer\target\test-classes;C:\Users\user\Documents\GitHub\Java-Bytecode-Explorer\target\classes;C:\Users\user\.m2\repository\org\openjfx\javafx-base\24\javafx-base-24.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-base\24\javafx-base-24-win.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-controls\24\javafx-controls-24.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-controls\24\javafx-controls-24-win.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-graphics\24\javafx-graphics-24.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-graphics\24\javafx-graphics-24-win.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-fxml\24\javafx-fxml-24-win.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-incubator-input\24\javafx-incubator-input-24-win.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-incubator-richtext\24\javafx-incubator-richtext-24-win.jar;C:\Users\user\.m2\repository\io\github\mkpaz\atlantafx-base\2.0.1\atlantafx-base-2.0.1.jar;C:\Users\user\.m2\repository\com\mamba\mambaui-fx\0.1\mambaui-fx-0.1.jar;C:\Users\user\.m2\repository\org\kordamp\ikonli\ikonli-material2-pack\12.4.0\ikonli-material2-pack-12.4.0.jar;C:\Users\user\.m2\repository\org\kordamp\ikonli\ikonli-core\12.4.0\ikonli-core-12.4.0.jar;C:\Users\user\.m2\repository\org\kordamp\ikonli\ikonli-javafx\12.4.0\ikonli-javafx-12.4.0.jar;C:\Users\user\.m2\repository\net\java\dev\jna\jna-jpms\5.18.0\jna-jpms-5.18.0.jar;C:\Users\user\.m2\repository\net\java\dev\jna\jna-platform-jpms\5.18.0\jna-platform-jpms-5.18.0.jar;"/>
     <property name="java.vm.vendor" value="Oracle Corporation"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="user.variant" value=""/>
     <property name="java.vendor.url" value="https://java.oracle.com/"/>
     <property name="user.timezone" value="Africa/Nairobi"/>
-    <property name="user.country.format" value="KE"/>
-    <property name="os.name" value="Windows 11"/>
+    <property name="os.name" value="Windows 10"/>
     <property name="java.vm.specification.version" value="23"/>
-    <property name="user.country" value="US"/>
+    <property name="user.country" value="GB"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-23\bin"/>
-    <property name="sun.java.command" value="C:\Users\joemw\AppData\Local\Temp\surefire5730409919458693407\surefirebooter-20251023234306056_3.jar C:\Users\joemw\AppData\Local\Temp\surefire5730409919458693407 2025-10-23T23-43-05_972-jvmRun1 surefire-20251023234306056_1tmp surefire_0-20251023234306056_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\user\AppData\Local\Temp\surefire11121241142403953179\surefirebooter-20251109144639754_3.jar C:\Users\user\AppData\Local\Temp\surefire11121241142403953179 2025-11-09T14-46-39_608-jvmRun1 surefire-20251109144639754_1tmp surefire_0-20251109144639754_2tmp"/>
     <property name="jdk.debug" value="release"/>
-    <property name="surefire.test.class.path" value="C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\target\test-classes;C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\target\classes;C:\Users\joemw\.m2\repository\org\openjfx\javafx-base\24\javafx-base-24.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-base\24\javafx-base-24-win.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-controls\24\javafx-controls-24.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-controls\24\javafx-controls-24-win.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-graphics\24\javafx-graphics-24.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-graphics\24\javafx-graphics-24-win.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-fxml\24\javafx-fxml-24-win.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-incubator-input\24\javafx-incubator-input-24-win.jar;C:\Users\joemw\.m2\repository\org\openjfx\javafx-incubator-richtext\24\javafx-incubator-richtext-24-win.jar;C:\Users\joemw\.m2\repository\io\github\mkpaz\atlantafx-base\2.0.1\atlantafx-base-2.0.1.jar;C:\Users\joemw\.m2\repository\com\mamba\mambaui-fx\0.1\mambaui-fx-0.1.jar;C:\Users\joemw\.m2\repository\org\kordamp\ikonli\ikonli-material2-pack\12.4.0\ikonli-material2-pack-12.4.0.jar;C:\Users\joemw\.m2\repository\org\kordamp\ikonli\ikonli-core\12.4.0\ikonli-core-12.4.0.jar;C:\Users\joemw\.m2\repository\org\kordamp\ikonli\ikonli-javafx\12.4.0\ikonli-javafx-12.4.0.jar;C:\Users\joemw\.m2\repository\net\java\dev\jna\jna-jpms\5.18.0\jna-jpms-5.18.0.jar;C:\Users\joemw\.m2\repository\net\java\dev\jna\jna-platform-jpms\5.18.0\jna-platform-jpms-5.18.0.jar;"/>
+    <property name="surefire.test.class.path" value="C:\Users\user\Documents\GitHub\Java-Bytecode-Explorer\target\test-classes;C:\Users\user\Documents\GitHub\Java-Bytecode-Explorer\target\classes;C:\Users\user\.m2\repository\org\openjfx\javafx-base\24\javafx-base-24.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-base\24\javafx-base-24-win.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-controls\24\javafx-controls-24.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-controls\24\javafx-controls-24-win.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-graphics\24\javafx-graphics-24.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-graphics\24\javafx-graphics-24-win.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-fxml\24\javafx-fxml-24-win.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-incubator-input\24\javafx-incubator-input-24-win.jar;C:\Users\user\.m2\repository\org\openjfx\javafx-incubator-richtext\24\javafx-incubator-richtext-24-win.jar;C:\Users\user\.m2\repository\io\github\mkpaz\atlantafx-base\2.0.1\atlantafx-base-2.0.1.jar;C:\Users\user\.m2\repository\com\mamba\mambaui-fx\0.1\mambaui-fx-0.1.jar;C:\Users\user\.m2\repository\org\kordamp\ikonli\ikonli-material2-pack\12.4.0\ikonli-material2-pack-12.4.0.jar;C:\Users\user\.m2\repository\org\kordamp\ikonli\ikonli-core\12.4.0\ikonli-core-12.4.0.jar;C:\Users\user\.m2\repository\org\kordamp\ikonli\ikonli-javafx\12.4.0\ikonli-javafx-12.4.0.jar;C:\Users\user\.m2\repository\net\java\dev\jna\jna-jpms\5.18.0\jna-jpms-5.18.0.jar;C:\Users\user\.m2\repository\net\java\dev\jna\jna-platform-jpms\5.18.0\jna-platform-jpms-5.18.0.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
-    <property name="user.home" value="C:\Users\joemw"/>
+    <property name="user.home" value="C:\Users\user"/>
     <property name="user.language" value="en"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
-    <property name="java.version.date" value="2025-01-21"/>
+    <property name="java.version.date" value="2024-10-15"/>
     <property name="java.home" value="C:\Program Files\Java\jdk-23"/>
     <property name="file.separator" value="\"/>
-    <property name="basedir" value="C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer"/>
+    <property name="basedir" value="C:\Users\user\Documents\GitHub\Java-Bytecode-Explorer"/>
     <property name="java.vm.compressedOopsMode" value="Zero based"/>
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\joemw\AppData\Local\Temp\surefire5730409919458693407\surefirebooter-20251023234306056_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\user\AppData\Local\Temp\surefire11121241142403953179\surefirebooter-20251109144639754_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
-    <property name="java.runtime.version" value="23.0.2+7-58"/>
-    <property name="user.name" value="joemw"/>
+    <property name="java.runtime.version" value="23.0.1+11-39"/>
+    <property name="user.name" value="user"/>
     <property name="stdout.encoding" value="Cp1252"/>
     <property name="path.separator" value=";"/>
     <property name="os.version" value="10.0"/>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="file.encoding" value="UTF-8"/>
     <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
-    <property name="maven.ext.class.path" value="C:\Program Files\Apache NetBeans\java\maven-nblib\netbeans-eventspy.jar"/>
-    <property name="localRepository" value="C:\Users\joemw\.m2\repository"/>
+    <property name="maven.ext.class.path" value="C:\Program Files\NetBeans-23\netbeans\java\maven-nblib\netbeans-eventspy.jar"/>
+    <property name="localRepository" value="C:\Users\user\.m2\repository"/>
     <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
-    <property name="java.io.tmpdir" value="C:\Users\joemw\AppData\Local\Temp\"/>
-    <property name="java.version" value="23.0.2"/>
-    <property name="user.dir" value="C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer"/>
+    <property name="java.io.tmpdir" value="C:\Users\user\AppData\Local\Temp\"/>
+    <property name="java.version" value="23.0.1"/>
+    <property name="user.dir" value="C:\Users\user\Documents\GitHub\Java-Bytecode-Explorer"/>
     <property name="os.arch" value="amd64"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
     <property name="sun.os.patch.level" value=""/>
     <property name="native.encoding" value="Cp1252"/>
-    <property name="java.library.path" value="C:\Program Files\Java\jdk-23\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Users\joemw\AppData\Local\Microsoft\WindowsApps;C:\Users\joemw\AppData\Local\GitHubDesktop\bin;."/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-23\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\mpirt;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\ProgramData\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;%LUXRENDER_ROOT%;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\apache-maven-3.6.3\bin;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\nodejs\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\dotnet\;C:\Users\user\AppData\Local\Microsoft\WindowsApps;C:\Users\user\AppData\Local\GitHubDesktop\bin;C:\Users\user\AppData\Local\Microsoft\WindowsApps;C:\Users\user\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\user\AppData\Roaming\npm;C:\msys64\ucrt64\bin;C:\Users\user\Documents\Java\apache-maven-3.8.8\bin;;."/>
     <property name="java.vm.info" value="mixed mode, sharing"/>
     <property name="stderr.encoding" value="Cp1252"/>
     <property name="java.vendor" value="Oracle Corporation"/>
-    <property name="java.vm.version" value="23.0.2+7-58"/>
+    <property name="java.vm.version" value="23.0.1+11-39"/>
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="67.0"/>
   </properties>

@@ -43,6 +43,7 @@ com\mamba\bytecodeexplorer\core\FileRefTree.class
 com\mamba\bytecodeexplorer\tree\item\FileRefTreeItem.class
 com\mamba\bytecodeexplorer\utility\ListChangeUtils.class
 com\mamba\bytecodeexplorer\utility\ListChangeCase$Kind.class
+com\mamba\bytecodeexplorer\file\FileRefWatcher2$FileEventListener$FileEvent$DirectoryRevalidated.class
 com\mamba\bytecodeexplorer\file\FileWatcherRegistry.class
 com\mamba\bytecodeexplorer\file\DelayedDirectoryScanner$1.class
 com\mamba\bytecodeexplorer\utility\ListChangeCase$PermutationCase.class
