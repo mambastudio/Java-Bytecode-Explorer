@@ -35,6 +35,30 @@ import java.util.logging.Logger;
  */
 public class FileRefWatcher2 {
     
+    // ============================================================
+    // Internal helper types (kept inside the same file for portability)
+    // ============================================================
+
+    /**
+     * Mutable state for an actively watched directory.
+     * Holds the WatchKey and the list of active listeners.
+     */
+    private static final class DirState {
+        WatchKey key;
+        final List<FileEventListener> listeners = new CopyOnWriteArrayList<>();
+
+        DirState(WatchKey key) {
+            this.key = key;
+        }
+    }
+    
+    /**
+     * Immutable snapshot for a directory that disappeared.
+     * Stores the timestamp of invalidation and the listeners
+     * that must be restored if the directory reappears.
+     */
+    private record InvalidationInfo(long timestamp, List<FileEventListener> retainedListeners) {}
+    
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
             r -> {
                 Thread t = new Thread(r);
@@ -44,18 +68,16 @@ public class FileRefWatcher2 {
             });
       
     private final WatchService watcher;
-    private final Map<Path, List<FileEventListener>> listeners = new ConcurrentHashMap<>();
-    private final Map<Path, WatchKey> keys = new ConcurrentHashMap<>();
+    // Active directories being watched: dir → DirState(key + listeners)
+    private final Map<Path, DirState> states = new ConcurrentHashMap<>();
+    // Directories whose watcher key failed (deleted/moved): dir → InvalidationInfo(timestamp + retainedListeners)
+    private final Map<Path, InvalidationInfo> invalidations = new ConcurrentHashMap<>();
     private Thread thread;
     
     private long delayTimeMilliseconds = 100;
     private long recheckDelayMillis = 1_000; // 1 seconds
     private long maxRecheckDurationMillis = 5_000; // 5 seconds total retry window
-    
-    private final Map<Path, Long> invalidated = new ConcurrentHashMap<>();
-    private final Map<Path, List<FileEventListener>> retained = new ConcurrentHashMap<>();
-    
-    
+               
     public FileRefWatcher2() {
         try {
             this.watcher = FileSystems.getDefault().newWatchService();
@@ -70,9 +92,19 @@ public class FileRefWatcher2 {
         thread.setDaemon(true);
         thread.start();
     }
+    
+    private DirState registerDir(Path dir) {
+        try {
+            WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            DirState ds = new DirState(key);
+            return ds;
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to register watcher for " + dir, e);
+        }
+    }
            
     public boolean isWatched(Path path){
-        return keys.containsKey(path);
+        return states.containsKey(path);
     }
     
     public void watch(Path dir, FileEventListener listener) {
@@ -81,20 +113,9 @@ public class FileRefWatcher2 {
 
         if (!Files.isDirectory(dir))
             throw new IllegalArgumentException("Not a directory: " + dir);
-
-        List<FileEventListener> list = listeners.computeIfAbsent(dir, d -> {
-            try {
-                WatchKey key = d.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-                keys.put(d, key);
-                return new CopyOnWriteArrayList<>();
-            } catch (IOException e) {
-                throw new IllegalStateException("Failed to register watcher for " + d, e);
-            }
-        });
-
-        if (!list.contains(listener)) {
-            list.add(listener);
-        }
+        
+        states.computeIfAbsent(dir, d -> registerDir(d))
+              .listeners.add(listener);        
     }
     
     public void watchTree(AbstractFileRefTree<?> tree, FileEventListener listener){
@@ -119,23 +140,23 @@ public class FileRefWatcher2 {
     public void unwatch(Path dir, FileEventListener... feListeners) {
         Objects.requireNonNull(dir, "dir must not be null");
         
-        List<FileEventListener> list = listeners.get(dir);
-        if (list == null) return;
+        DirState state = states.get(dir);
+        if (state == null) return;
 
         if (feListeners == null || feListeners.length == 0) {
             // Explicit full unwatch request
-            listeners.remove(dir);
-            WatchKey key = keys.remove(dir);
-            if (key != null) key.cancel();
+            fullUnwatch(dir);
             return;
         }
 
-        list.removeAll(List.of(feListeners));
-
-        if (list.isEmpty()) {
-            listeners.remove(dir);
-            WatchKey key = keys.remove(dir);
-            if (key != null) key.cancel();
+        state.listeners.removeAll(List.of(feListeners));
+        if (state.listeners.isEmpty()) fullUnwatch(dir);
+    }
+    
+    private void fullUnwatch(Path dir) {
+        DirState state = states.remove(dir);
+        if (state != null && state.key != null) {
+            state.key.cancel();
         }
     }
         
@@ -165,40 +186,19 @@ public class FileRefWatcher2 {
                 WatchKey key = watcher.take(); //blocking, if nothing happens it will block until an event occurs or even when monitored folder is deleted              
                 Path dir = (Path) key.watchable();
                 
-                for (WatchEvent<?> event : key.pollEvents()) {
-                    var fe = toFileEvent(dir, event);
-                    listeners.getOrDefault(dir, List.of())
-                             .forEach(l -> scheduler.schedule(
-                                     () -> l.onEvent(fe), 
-                                     delayTimeMilliseconds, 
-                                     TimeUnit.MILLISECONDS));
-                }
-                
-                if (!key.reset()) {
-                    // collect listeners first
-                    List<FileEventListener> ls = listeners.remove(dir);
-                    if (ls != null) retained.put(dir, ls);
-                    keys.remove(dir);
-                    
-                    invalidated.put(dir, System.currentTimeMillis());
-
-                    if (ls != null) {
-                        for (FileEventListener l : ls) {
-                            try {
-                                scheduler.schedule(
-                                        () -> l.onEvent(new FileEventListener.FileEvent.KeyInvalid(dir)), 
-                                        delayTimeMilliseconds, 
-                                        TimeUnit.MILLISECONDS);
-                                
-                            } catch (Exception ex) {
-                                Logger.getLogger(FileRefWatcher2.class.getName())
-                                      .log(Level.WARNING, "Listener failed", ex);
-                            }
+                DirState state = states.get(dir);
+                if (state != null) {
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        FileEvent fe = toFileEvent(dir, event);
+                        for (FileEventListener l : state.listeners) {
+                            scheduler.schedule(() -> l.onEvent(fe),
+                                    delayTimeMilliseconds, TimeUnit.MILLISECONDS);
                         }
                     }
-                    
-                    // Schedule a revalidation check — maybe Maven/IDE recreated it
-                    scheduler.schedule(() -> revalidate(dir), recheckDelayMillis, TimeUnit.MILLISECONDS);
+                }
+
+                if (!key.reset()) {
+                    handleInvalidKey(dir, state);
                 }
             }
         } catch (InterruptedException | ClosedWatchServiceException e) {
@@ -206,41 +206,62 @@ public class FileRefWatcher2 {
         }
     }
     
-    private void revalidate(Path dir) {
-        try {
-            if (Files.exists(dir) && Files.isDirectory(dir)) {
-                WatchKey newKey = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-                keys.put(dir, newKey);
-                invalidated.remove(dir);
+    private void handleInvalidKey(Path dir, DirState state) {
+        if (state != null) {
+            invalidations.put(dir,
+                    new InvalidationInfo(
+                            System.currentTimeMillis(),
+                            state.listeners));
 
-                // restore listeners if they were retained
-                List<FileEventListener> ls = listeners.computeIfAbsent(dir, d -> retained.remove(d));
-                
-                if (ls != null) {
-                    FileEventListener.FileEvent ev =
-                            new FileEventListener.FileEvent.DirectoryRevalidated(dir);
-                    for (FileEventListener l : ls) {
-                        scheduler.schedule(() -> l.onEvent(ev),
-                                           delayTimeMilliseconds, TimeUnit.MILLISECONDS);
-                    }
-                }
-
-                //To remove
-                Logger.getLogger(FileRefWatcher2.class.getName())
-                      .log(Level.INFO, "Revalidated watcher for {0}", dir);
-            } else {
-                // still gone — retry a few times (up to ~10s)
-                long age = System.currentTimeMillis() - invalidated.getOrDefault(dir, 0L);
-                if (age < maxRecheckDurationMillis) {
-                    scheduler.schedule(() -> revalidate(dir), recheckDelayMillis, TimeUnit.MILLISECONDS);
-                } else {
-                    invalidated.remove(dir);
-                }
+            // notify listeners about invalidation
+            for (FileEventListener l : state.listeners) {
+                scheduler.schedule(
+                        () -> l.onEvent(new FileEvent.KeyInvalid(dir)),
+                        delayTimeMilliseconds,
+                        TimeUnit.MILLISECONDS);
             }
-        } catch (IOException ex) {
-            Logger.getLogger(FileRefWatcher2.class.getName())
-                  .log(Level.WARNING, "Revalidation failed for " + dir, ex);
         }
+
+        states.remove(dir);
+        scheduler.schedule(() -> revalidate(dir), recheckDelayMillis, TimeUnit.MILLISECONDS);
+    }
+    
+    private void revalidate(Path dir) {
+        InvalidationInfo info = invalidations.get(dir);
+        if (info == null) return;
+        
+        if (Files.exists(dir) && Files.isDirectory(dir)) {
+            // Directory reappeared
+            DirState state = registerDir(dir);
+
+            if (info.retainedListeners != null) {
+                state.listeners.addAll(info.retainedListeners);
+            }
+
+            states.put(dir, state);
+            invalidations.remove(dir);
+
+            FileEvent ev = new FileEvent.DirectoryRevalidated(dir);
+            for (FileEventListener l : state.listeners) {
+                scheduler.schedule(() -> l.onEvent(ev),
+                        delayTimeMilliseconds, TimeUnit.MILLISECONDS);
+            }
+
+            Logger.getLogger(FileRefWatcher2.class.getName())
+                    .log(Level.INFO, "Revalidated watcher for {0}", dir);
+            return;
+        }
+
+        // Directory still missing — retry within window
+        long age = System.currentTimeMillis() - info.timestamp;
+        if (age < maxRecheckDurationMillis) {
+            scheduler.schedule(() -> revalidate(dir),
+                    recheckDelayMillis, TimeUnit.MILLISECONDS);
+        } else {
+            invalidations.remove(dir);
+        }
+
+        
     }
 
     
