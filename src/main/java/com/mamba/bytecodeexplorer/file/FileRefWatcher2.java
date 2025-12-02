@@ -53,6 +53,10 @@ public class FileRefWatcher2 {
         DirState(WatchKey key) {
             this.key = key;
         }
+        
+        boolean hasKey(){
+            return key != null;
+        }
     }
     
     /**
@@ -150,29 +154,28 @@ public class FileRefWatcher2 {
         }
     }    
 
+    //if feListeners are empty, remove everything, otherwise, remove specified listeners
     public void unwatch(Path dir, FileEventListener... feListeners) {
         Objects.requireNonNull(dir, "dir must not be null");
-        
-        DirState state = states.get(dir);
+
+        var state = states.get(dir);
         if (state == null) return;
 
-        if (feListeners == null || feListeners.length == 0) {
-            // Explicit full unwatch request
-            fullUnwatch(dir);
-            return;
+        boolean full = (feListeners == null || feListeners.length == 0);
+
+        if (!full) {
+            state.listeners.removeAll(List.of(feListeners));
+            full = state.listeners.isEmpty(); // auto-full if last listener removed
         }
 
-        state.listeners.removeAll(List.of(feListeners));
-        if (state.listeners.isEmpty()) fullUnwatch(dir);
-    }
-    
-    private void fullUnwatch(Path dir) {
-        DirState state = states.remove(dir);
-        if (state != null && state.key != null) {
-            state.key.cancel();
+        if (full) {
+            DirState removed = states.remove(dir);
+            if (removed != null && removed.key != null) {
+                removed.key.cancel();
+            }
         }
     }
-        
+    
     public void unwatchTree(AbstractFileRefTree<?> tree) {
         Objects.requireNonNull(tree, "Tree should not be null");
 
