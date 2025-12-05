@@ -26,6 +26,6 @@ public record Relation<T> (T parent, T child){
     }
         
     public boolean isPresent(){
-        return child == null;
+        return child != null;
     }
 }

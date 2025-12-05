@@ -29,7 +29,6 @@ com\mamba\bytecodeexplorer\tree\item\RecursiveTreeItem.class
 com\mamba\bytecodeexplorer\SampleString.class
 com\mamba\bytecodeexplorer\file\FileRefWatcher2$DirState.class
 com\mamba\bytecodeexplorer\JavaBytecodeExplorerController.class
-com\mamba\bytecodeexplorer\JavaBytecodeExplorerController$1.class
 com\mamba\bytecodeexplorer\tree\model\FileRefInfo.class
 com\mamba\bytecodeexplorer\utility\ListChangeCase$ReplacedCase.class
 com\mamba\bytecodeexplorer\utility\ListChangeCase$AddRemoveCase.class

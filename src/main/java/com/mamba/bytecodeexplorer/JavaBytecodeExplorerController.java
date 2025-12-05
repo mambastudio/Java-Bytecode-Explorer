@@ -10,18 +10,12 @@ import com.mamba.bytecodeexplorer.dialog.FolderTreeDialog;
 import com.mamba.bytecodeexplorer.dialog.FolderTreePair;
 import com.mamba.bytecodeexplorer.tree.model.FileRefModel;
 import com.mamba.bytecodeexplorer.file.FileRef;
-import com.mamba.bytecodeexplorer.file.FileWatcher;
-import com.mamba.bytecodeexplorer.file.FileWatcher.FileEvent;
-import static com.mamba.bytecodeexplorer.file.FileWatcher.FileEventEnum.FILE_CREATED;
-import static com.mamba.bytecodeexplorer.file.FileWatcher.FileEventEnum.FILE_DELETED;
-import static com.mamba.bytecodeexplorer.file.FileWatcher.FileEventEnum.FILE_MODIFIED;
-import static com.mamba.bytecodeexplorer.file.FileWatcher.FileEventEnum.FILE_RENAMED;
-import com.mamba.bytecodeexplorer.file.FileWatcherRegistry;
+import com.mamba.bytecodeexplorer.file.FileRefWatcher2;
+import com.mamba.bytecodeexplorer.file.FileRefWatcher2.FileEventListener.FileEvent.*;
 import com.mamba.bytecodeexplorer.tree.item.FileRefTreeItem;
 import com.mamba.bytecodeexplorer.tree.item.RootTreeItem;
 import com.mamba.bytecodeexplorer.tree.model.ClassRefModel;
 import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
-import java.io.File;
 import java.io.IO;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -54,6 +48,7 @@ public class JavaBytecodeExplorerController implements Initializable {
     @FXML
     StackPane root;
     
+    FileRefWatcher2 watcher = new FileRefWatcher2();
     FolderTreeDialog folderTreeDialog = new FolderTreeDialog();
     InformationDialog aboutDialog = new InformationDialog("Java bytecode viewer to assess code ops realtime");
     
@@ -120,22 +115,18 @@ public class JavaBytecodeExplorerController implements Initializable {
                 rootVirtualClass.addChild(ancestor); //since parent added to ancestor, add now to virtual root
             
             //TODO: Replace with FileRefWatcher2, since we aren't doing recursive monitoring automatically (hierarchy folders might not be direct children)
-            FileWatcher watcher = FileWatcherRegistry.getOrCreate(
-                            ancestor.ref.file(),
-                            FileWatcher.Mode.RECURSIVE);  
-            IO.println(ancestorFolder);
-            watcher.addEventHandler(event -> {
-                if(event instanceof FileEvent(FileWatcher.FileEventEnum type, File file)){
-                    var o = ancestor.findInTree(new FileRef(file));
-                    if(o.isPresent()){
-                        switch (type) {
-                            case FILE_CREATED -> IO.println("Created: " + file);
-                            case FILE_DELETED -> IO.println("Deleted: " + file);
-                            case FILE_MODIFIED -> IO.println("Modified: " + file);
-                            case FILE_RENAMED -> IO.println("Renamed: " + file);
-                            default -> IO.println("Other event: " + type + " on " + file);
-                        }
+            watcher.watchTree(ancestor, e->{
+                switch(e){
+                    case Created(var dir, var file) -> {IO.println("created");}
+                    case Deleted(var dir, var file) -> {                
+                        var result = ancestor.findInTree2(new FileRef(file));
+                        if(result.isPresent())
+                            IO.println("asdafsdf");
                     }
+                    case Modified(var dir, var file) -> {IO.println("modified");}
+                    case Overflow(var dir) -> {IO.println("overflow");}
+                    case KeyInvalid(var dir) -> {IO.println("invalid");}
+                    case DirectoryRevalidated(var dir) -> {IO.println("revalidated");}
                 }
             });
             

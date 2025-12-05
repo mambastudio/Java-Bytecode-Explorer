@@ -53,10 +53,6 @@ public class FileRefWatcher2 {
         DirState(WatchKey key) {
             this.key = key;
         }
-        
-        boolean hasKey(){
-            return key != null;
-        }
     }
     
     /**
