@@ -19,6 +19,8 @@ import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
 import java.io.IO;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -117,11 +119,16 @@ public class JavaBytecodeExplorerController implements Initializable {
             //TODO: Replace with FileRefWatcher2, since we aren't doing recursive monitoring automatically (hierarchy folders might not be direct children)
             watcher.watchTree(ancestor, e->{
                 switch(e){
-                    case Created(var dir, var file) -> {IO.println("created");}
-                    case Deleted(var dir, var file) -> {                
-                        var result = ancestor.findInTree2(new FileRef(file));
-                        if(result.isPresent())
-                            IO.println("asdafsdf");
+                    case Created(var dir, var file) -> {}
+                    case Deleted(var dir, var file) -> { 
+                        var fi = new FileRef(file);
+                        IO.println("Parent : " +ancestor.ref().path().toFile());
+                        IO.println("Child  : " +fi.path().toFile());
+                    
+                        IO.println(fi.isDescendantOf(ancestor.ref()));
+                        IO.println(fi.path().startsWith(ancestor.ref().path()));
+                        var result = ancestor.findInTree2(fi);                        
+                        IO.println(result);
                     }
                     case Modified(var dir, var file) -> {IO.println("modified");}
                     case Overflow(var dir) -> {IO.println("overflow");}

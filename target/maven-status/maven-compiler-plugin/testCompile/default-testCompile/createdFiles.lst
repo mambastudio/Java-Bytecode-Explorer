@@ -1,6 +1,7 @@
 com\mamba\bytecodeexplorer\filewatcher\FileWatcherTest.class
+com\mamba\bytecodeexplorer\filewatcher\JNAFileMonitor$1.class
+com\mamba\bytecodeexplorer\ModalLauncher.class
+com\mamba\bytecodeexplorer\filewatcher\ModelSearch.class
 com\mamba\bytecodeexplorer\ModalApplication.class
 com\mamba\bytecodeexplorer\filewatcher\FileWatcherTest$1.class
-com\mamba\bytecodeexplorer\filewatcher\JNAFileMonitor$1.class
 com\mamba\bytecodeexplorer\filewatcher\JNAFileMonitor.class
-com\mamba\bytecodeexplorer\ModalLauncher.class

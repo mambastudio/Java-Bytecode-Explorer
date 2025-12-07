@@ -106,8 +106,7 @@ public record FileRef(Path path) {
 
     public boolean isAncestorOf(FileRef child) {
         if (isVirtualRoot()) return true;        // virtual root = ancestor of all
-        if (child == null || child.isVirtualRoot()) return false;
-        if (!isDirectory()) return false;
+        if (child == null || child.isVirtualRoot()) return false;        
         return !this.equals(child) && child.path.startsWith(path);
     }
 

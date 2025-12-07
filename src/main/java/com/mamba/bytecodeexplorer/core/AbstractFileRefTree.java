@@ -5,6 +5,7 @@
 package com.mamba.bytecodeexplorer.core;
 
 import com.mamba.bytecodeexplorer.file.FileRef;
+import java.io.IO;
 
 /**
  *
@@ -30,10 +31,12 @@ public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
         //check node ref for this is equal to target
         if (ref() != null && ref().equals(target))
             return Relation.asChild(target);
-        
+                
         //if not descendant, no point of searching deeper
         if(!target.isDescendantOf(ref()))
             return Relation.empty();
+        
+        IO.println("kubafu");
         
         //check if children have any match and return
         if(childrenContain(target))
