@@ -36,11 +36,11 @@ public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
         if(!target.isDescendantOf(ref()))
             return Relation.empty();
         
-        IO.println("kubafu");
-        
         //check if children have any match and return
         if(childrenContain(target))
             return new Relation<>(this.ref(), target);
+        
+        IO.println(target.parent().get());
         
         //go next depth
         for (var child : children()) {
