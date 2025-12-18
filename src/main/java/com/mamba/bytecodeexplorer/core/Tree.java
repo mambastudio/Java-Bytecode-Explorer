@@ -14,7 +14,7 @@ import javafx.collections.ObservableList;
  * @param <Y>
  */
 public interface Tree<X, Y extends Tree<X,Y>> {
-    X ref();
+    X ref(); //TODO: Optional<X>
     ObservableList<Y> children();   
     
     Optional<Y> findInTree(X x);    
@@ -34,14 +34,19 @@ public interface Tree<X, Y extends Tree<X,Y>> {
         return false;
     }   
     
+    default boolean remove(Y y){
+        return children().remove(y);
+    }
+    
     default boolean childrenContain(Y child){
         return children().contains(child);
     }
     
     default boolean childrenContain(X child){
-        for(Y y : children())
+        for(Y y : children()){
             if(y.ref().equals(child))
                 return true;
+        }
         return false;
     }
     
@@ -74,7 +79,5 @@ public interface Tree<X, Y extends Tree<X,Y>> {
         return !children().isEmpty();
     }
     
-    default boolean remove(Y y){
-        return children().remove(y);
-    }
+    
 }

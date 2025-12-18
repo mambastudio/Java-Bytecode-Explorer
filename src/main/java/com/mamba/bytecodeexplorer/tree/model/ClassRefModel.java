@@ -6,6 +6,8 @@ package com.mamba.bytecodeexplorer.tree.model;
 
 import com.mamba.bytecodeexplorer.core.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.file.FileRef;
+import java.io.IO;
+import java.nio.file.Files;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,8 +16,7 @@ import javafx.collections.ObservableList;
  *
  * @author joemw
  */
-public class ClassRefModel extends AbstractFileRefTree<ClassRefModel>{
-    
+public class ClassRefModel extends AbstractFileRefTree<ClassRefModel>{    
     public final FileRef ref;
     public final ObservableList<ClassRefModel> children;
     
@@ -24,23 +25,13 @@ public class ClassRefModel extends AbstractFileRefTree<ClassRefModel>{
         this.ref = ref;      
         
         switch(createChildren){
-            case true -> {
-                switch(isLeaf()){
-                    case true -> this.children = FXCollections.emptyObservableList();
-                    case false -> {
-                        this.children = FXCollections.observableArrayList();
-                        for(FileRef r : ref.children(".class"))
-                            if(r.isLeaf())
-                                this.children.add(new ClassRefModel(r, false));
-                    }
-                }
+            case true -> {               
+                this.children = FXCollections.observableArrayList();                
+                for(FileRef r : ref.children(".class"))
+                    if(r.isLeaf())
+                        this.children.add(new ClassRefModel(r, false));                    
             }
-            case false ->{
-                switch(isLeaf()){
-                    case true -> this.children = FXCollections.emptyObservableList();
-                    case false -> this.children = FXCollections.observableArrayList();
-                }
-            }
+            case false ->this.children = FXCollections.observableArrayList();            
         }
     }
     

@@ -22,7 +22,15 @@ public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
     public boolean isLeaf(){
         return ref().isLeaf();
     }
-        
+    
+    public boolean isTerminal(){
+        return ref() == null || ref().isLeaf();
+    }
+    
+    public boolean isResolved() {
+        return ref() != null;
+    }    
+   
     @Override
     public Relation<FileRef> findInTree2(FileRef target) {        
         if(target == null)
@@ -34,14 +42,12 @@ public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
                 
         //if not descendant, no point of searching deeper
         if(!target.isDescendantOf(ref()))
-            return Relation.empty();
+            return Relation.empty();              
         
         //check if children have any match and return
         if(childrenContain(target))
             return new Relation<>(this.ref(), target);
-        
-        IO.println(target.parent().get());
-        
+             
         //go next depth
         for (var child : children()) {
             var match = child.findInTree2(target);
@@ -99,4 +105,6 @@ public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
         */
         return ch;
     }
+    
+    
 }

@@ -104,11 +104,13 @@ public class JavaBytecodeExplorerController implements Initializable {
     
     //Update UI tree for classes files
     private void setTreeItem(FolderTreePair f){
-        if(f instanceof FolderTreePair(FileRef ancestorFolder, FileRef parentFolder, _)){         
+        if(f instanceof FolderTreePair(FileRef ancestorFolder, FileRef parentFolder, _)){   
+            IO.println(f);
             var rootVirtualClass = new ClassRefModel();
             
             var ancestor = new ClassRefModel(ancestorFolder, false);   
             var addedParentToAncestor = ancestor.addChild(new ClassRefModel(parentFolder, true)); //It might fail, hence we resolve one possibility below
+            
             if(!addedParentToAncestor){ //did it fail?
                 if(ancestorFolder.equals(parentFolder)) //why? is it because ancestor is same as parent folder
                     rootVirtualClass.addChild(new ClassRefModel(parentFolder, true)); //add to rootvirtual if true
@@ -116,24 +118,22 @@ public class JavaBytecodeExplorerController implements Initializable {
             else
                 rootVirtualClass.addChild(ancestor); //since parent added to ancestor, add now to virtual root
             
+            
+            
             //TODO: Replace with FileRefWatcher2, since we aren't doing recursive monitoring automatically (hierarchy folders might not be direct children)
-            watcher.watchTree(ancestor, e->{
+            watcher.watchTree(rootVirtualClass, e->{
                 switch(e){
                     case Created(var dir, var file) -> {}
-                    case Deleted(var dir, var file) -> { 
-                        var fi = new FileRef(file);
-                        IO.println("Parent : " +ancestor.ref().path().toFile());
-                        IO.println("Child  : " +fi.path().toFile());
-                    
-                        IO.println(fi.isDescendantOf(ancestor.ref()));
-                        IO.println(fi.path().startsWith(ancestor.ref().path()));
-                        var result = ancestor.findInTree2(fi);                        
+                    case Deleted(var dir, var file) -> {                         
+                        var fi = new FileRef(file);                                           
+                        var result = rootVirtualClass.findInTree2(fi);   
+                        IO.println("-> " +fi);
                         IO.println(result);
                     }
                     case Modified(var dir, var file) -> {IO.println("modified");}
                     case Overflow(var dir) -> {IO.println("overflow");}
                     case KeyInvalid(var dir) -> {IO.println("invalid");}
-                    case DirectoryRevalidated(var dir) -> {IO.println("revalidated");}
+                    case DirectoryRevalidated(var dir) -> {IO.println(new FileRef(dir)+ " revalidated");}
                 }
             });
             

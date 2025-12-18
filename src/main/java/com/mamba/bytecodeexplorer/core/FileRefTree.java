@@ -23,6 +23,16 @@ public interface FileRefTree<Y extends FileRefTree<Y>> extends Tree<FileRef, Y>{
     }
     
     @Override
+    default boolean childrenContain(FileRef child){        
+        for(Y y : children()){       
+            if(y.ref().equals(child))
+                return true;
+        }
+        return false;
+    }
+        
+    
+    @Override
     default Optional<Y> findInTree(FileRef target) {
         if(target == null)
             return Optional.empty();
@@ -55,5 +65,22 @@ public interface FileRefTree<Y extends FileRefTree<Y>> extends Tree<FileRef, Y>{
         if(exist(ref))
             throw new UnsupportedOperationException("method remove not yet supported");
         return false;
+    }
+    
+    default String treeString(int indent){
+        var s = "";
+        if(hasChildren()){
+            for(Y y : children()){
+                s = s.concat(y.toString()).concat("\n");
+                if(y.hasChildren()){
+                    s = s.concat(y.treeString(indent));                    
+                }                    
+            }
+        }
+        return s.indent(indent);
+    }
+    
+    default String treeString(){        
+        return toString().concat("\n").concat(treeString(3)).stripTrailing();
     }
 }

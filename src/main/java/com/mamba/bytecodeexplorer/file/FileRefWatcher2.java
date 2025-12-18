@@ -135,19 +135,18 @@ public class FileRefWatcher2 {
         Objects.requireNonNull(tree, "Tree should not be null");
         Objects.requireNonNull(listener, "Listener should not be null");
         
-        if (tree.ref() == null || !tree.ref().isDirectory())
+        if (tree.isTerminal())
             return;
 
-        var dir = tree.ref().path();
-        watch(dir, listener); // your existing method
-
-        // Recursively register children that are directories
-        for (var child : tree.children()) {
-            var childRef = child.ref();
-            if (childRef != null && childRef.isDirectory()) {
-                watchTree((AbstractFileRefTree<?>) child, listener);
-            }
+        if(tree.ref().isDirectory()){ //to avoid virtualroot
+            var dir = tree.ref().path();
+            watch(dir, listener); // your existing method
         }
+                
+        // Recursively register children that are directories
+        for (var child : tree.children()) 
+            if(child instanceof AbstractFileRefTree<?> c)
+                watchTree(c, listener);    
     }    
 
     //if feListeners are empty, remove everything, otherwise, remove specified listeners
@@ -175,12 +174,14 @@ public class FileRefWatcher2 {
     public void unwatchTree(AbstractFileRefTree<?> tree) {
         Objects.requireNonNull(tree, "Tree should not be null");
 
-        if (tree.ref() == null || !tree.ref().isDirectory())
+        if(tree.isTerminal())
             return;
 
-        // 1. Unregister this directory
-        var dir = tree.ref().path();
-        unwatch(dir); // your existing method to cancel the watch key
+        if(tree.isDirectory()){ //to avoid virtualroot
+            // 1. Unregister this directory
+            var dir = tree.ref().path();
+            unwatch(dir); // your existing method to cancel the watch key
+        }
 
         // 2. Recursively unregister children that are directories
         for (var child : tree.children()) {
@@ -259,9 +260,7 @@ public class FileRefWatcher2 {
                 scheduler.schedule(() -> l.onEvent(ev),
                         delayTimeMilliseconds, TimeUnit.MILLISECONDS);
             }
-
-            Logger.getLogger(FileRefWatcher2.class.getName())
-                    .log(Level.INFO, "Revalidated watcher for {0}", dir);
+            
             return;
         }
 

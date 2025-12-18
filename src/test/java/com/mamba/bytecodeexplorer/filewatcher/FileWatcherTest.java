@@ -63,8 +63,8 @@ public class FileWatcherTest {
     
     void test3() throws InterruptedException{
         var watcher = new FileRefWatcher2();
-        var root = new ClassRefModel(new FileRef("C:\\Users\\user\\Documents\\GitHub\\mambaui-fx"), false);
-        var folder = new ClassRefModel(new FileRef("C:\\Users\\user\\Documents\\GitHub\\mambaui-fx\\target\\classes\\com\\mamba\\mambaui\\base"), true);
+        var root = new ClassRefModel(new FileRef("C:\\Users\\joemw\\OneDrive\\Documents\\GitHub\\mambaui-fx"), false);
+        var folder = new ClassRefModel(new FileRef("C:\\Users\\joemw\\OneDrive\\Documents\\GitHub\\mambaui-fx\\target\\classes\\com\\mamba\\mambaui\\base"), true);
         root.addChild(folder);
         
         watcher.watchTree(root, e->{
