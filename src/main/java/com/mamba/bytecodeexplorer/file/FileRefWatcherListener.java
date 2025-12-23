@@ -4,6 +4,8 @@
  */
 package com.mamba.bytecodeexplorer.file;
 
+import com.mamba.bytecodeexplorer.file.type.FileRef;
+
 /**
  *
  * @author user

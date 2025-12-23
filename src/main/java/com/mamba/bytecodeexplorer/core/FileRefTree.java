@@ -4,7 +4,7 @@
  */
 package com.mamba.bytecodeexplorer.core;
 
-import com.mamba.bytecodeexplorer.file.FileRef;
+import com.mamba.bytecodeexplorer.file.type.FileRef;
 import java.util.Optional;
 
 /**

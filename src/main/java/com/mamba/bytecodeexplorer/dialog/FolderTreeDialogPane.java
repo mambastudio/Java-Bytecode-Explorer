@@ -7,6 +7,8 @@ package com.mamba.bytecodeexplorer.dialog;
 import com.mamba.bytecodeexplorer.tree.model.FileRefModel;
 import com.mamba.bytecodeexplorer.tree.item.RootTreeItem;
 import com.mamba.bytecodeexplorer.file.FileRef;
+import com.mamba.bytecodeexplorer.file.type.FileRef;
+import com.mamba.bytecodeexplorer.file.type.RealFile;
 import com.mamba.bytecodeexplorer.tree.model.FileRefInfo;
 import java.io.File;
 import java.io.IOException;
@@ -105,7 +107,8 @@ public class FolderTreeDialogPane extends HBox {
         folderExploreTreeView.setShowRoot(false); 
         
         folderExploreTreeView.getSelectionModel().selectedItemProperty().addListener((o, ov, nv) ->{
-            var f = Optional.<FileRef>ofNullable(nv.getValue().ref());  
+            //var f = Optional.<FileRef>ofNullable(nv.getValue().ref());  
+            if(!())
             switch(f.isPresent() && f.get().isLeaf()){
                 case true -> folderExploreSelectedProperty.set(f.get().parent().get());
                 case false -> folderExploreSelectedProperty.set(null);
@@ -177,8 +180,8 @@ public class FolderTreeDialogPane extends HBox {
         
         if(selectedDirectory.isPresent())
             if(selectedDirectory.get().isDirectory() && selectedDirectory.get() instanceof File f){
-                if(!folderListView.getItems().contains(new FileRef(f)))
-                    folderListView.getItems().add(new FileRef(f));
+                if(!folderListView.getItems().contains(new RealFile(f)))
+                    folderListView.getItems().add(new RealFile(f));
             }
     }
     

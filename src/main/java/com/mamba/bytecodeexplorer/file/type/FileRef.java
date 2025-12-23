@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package com.mamba.bytecodeexplorer.file;
+package com.mamba.bytecodeexplorer.file.type;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -11,12 +11,12 @@ import java.util.Optional;
  *
  * @author joemw
  */
-public sealed interface FileRef2 permits RealFile, VirtualFile{
+public sealed interface FileRef permits RealFile, VirtualFile{
     public enum ExploreType { FILE_EXPLORE, FOLDER_EXPLORE, FILE_OR_FOLDER_EXPLORE }
     public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("win");    
     public boolean isVirtual();
     
-    default boolean isAncestorOf(FileRef2 child) {        
+    default boolean isAncestorOf(FileRef child) {        
         Objects.requireNonNull(child, "method parameter child must not be null");
         return switch (this) {            
             case VirtualFile _ -> true; // Virtual root is ancestor of everything except null
@@ -28,7 +28,7 @@ public sealed interface FileRef2 permits RealFile, VirtualFile{
         };
     }
 
-    default boolean isDescendantOf(FileRef2 parent) {
+    default boolean isDescendantOf(FileRef parent) {
         return parent != null && parent.isAncestorOf(this);
     }
     
@@ -61,5 +61,7 @@ public sealed interface FileRef2 permits RealFile, VirtualFile{
             case VirtualFile _ -> Optional.empty();
             case RealFile r -> Optional.of(new RealFile(r.path().getParent()));
         };
-    }    
+    }  
+    
+    public String name();
 }

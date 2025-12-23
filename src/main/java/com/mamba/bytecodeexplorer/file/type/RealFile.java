@@ -1,79 +1,63 @@
-package com.mamba.bytecodeexplorer.file;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mamba.bytecodeexplorer.file.type;
 
-import static com.mamba.bytecodeexplorer.file.FileRef.ExploreType.FILE_EXPLORE;
-import static com.mamba.bytecodeexplorer.file.FileRef.ExploreType.FILE_OR_FOLDER_EXPLORE;
-import static com.mamba.bytecodeexplorer.file.FileRef.ExploreType.FOLDER_EXPLORE;
-
+import com.mamba.bytecodeexplorer.file.FileExtensions;
+import static com.mamba.bytecodeexplorer.file.type.FileRef.ExploreType.FILE_OR_FOLDER_EXPLORE;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-public record FileRef(Path path) {
-
-    public enum ExploreType { FILE_EXPLORE, FOLDER_EXPLORE, FILE_OR_FOLDER_EXPLORE }
-
-    private static final boolean IS_WINDOWS =
-            System.getProperty("os.name").toLowerCase().contains("win");
-
+/**
+ *
+ * @author joemw
+ */
+public record RealFile(Path path) implements FileRef {
+    
     // Compact constructor: normalize if real path
-    public FileRef {
-        if (path != null) {
-            path = path.normalize().toAbsolutePath();
-        }
+    public RealFile {
+        Objects.requireNonNull(path, "path is null and is not allowed");            
     }
 
     // Secondary constructors
-    public FileRef(String path) {
+    public RealFile(String path) {
         this(path == null ? null : Paths.get(path));
     }
 
-    public FileRef(File file) {
+    public RealFile(File file) {
         this(file == null ? null : file.toPath());
     }
 
-    public FileRef(URI uri) {
+    public RealFile(URI uri) {
         this(uri == null ? null : new File(uri).toPath());
     }
 
-    public FileRef() {
-        this(Paths.get(".").toAbsolutePath());
-    }
-
-    // Factory for explicit dummy root
-    public static FileRef virtualRoot() {
-        return new FileRef((Path) null);
-    }
-
-    public boolean isVirtualRoot() {
-        return path == null;
-    }
-
-    // ------------------
-    // File properties
-    // ------------------
-
-    public boolean isFileSystem() {
-        return !isVirtualRoot() && path.getParent() == null;
-    }
-
     public boolean isLeaf() {
-        return !isVirtualRoot() && !Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS);
+        return !Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS);
     }
 
     public boolean isDirectory() {
-        return !isVirtualRoot() && Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS);
+        return Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS);
     }
 
     public boolean exists() {
-        return !isVirtualRoot() && Files.exists(path, LinkOption.NOFOLLOW_LINKS);
+        return Files.exists(path, LinkOption.NOFOLLOW_LINKS);
     }
 
     public boolean isDirectoryOrFile(String... extensions) {
@@ -81,50 +65,28 @@ public record FileRef(Path path) {
     }
 
     public FileSystem fileSystem() {
-        if (isVirtualRoot()) throw new IllegalStateException("Virtual root has no file system");
         return path.getFileSystem();
     }
 
     public String rootName() {
-        if (isVirtualRoot()) return "<virtual-root>";
         Path root = path.getRoot();
         return root == null ? path.toString() : root.toString();
     }
 
     public File file() {
-        if (isVirtualRoot()) throw new IllegalStateException("Virtual root has no file");
         return path.toFile();
     }
 
     public boolean isHidden() {
-        return !isVirtualRoot() && file().isHidden();
+        return file().isHidden();
     }
-
+    
     // ------------------
     // Hierarchy relations
     // ------------------
-
-    public boolean isAncestorOf(FileRef child) {
-        if (isVirtualRoot()) return true;        // virtual root = ancestor of all
-        if (child == null || child.isVirtualRoot()) return false;        
-        return !this.equals(child) && child.path.startsWith(path);
-    }
-
-    public boolean isDescendantOf(FileRef parent) {
-        return parent != null && parent.isAncestorOf(this);
-    }
-
+    
     public boolean hasChildren() {
         return isDirectory() && path.toFile().list().length != 0;
-    }
-
-    public boolean hasParent() {
-        return !isVirtualRoot() && path.getParent() != null;
-    }
-
-    public Optional<FileRef> parent() {
-        return hasParent() ? Optional.of(new FileRef(path.getParent()))
-                           : Optional.empty();
     }
 
     // ------------------
@@ -139,7 +101,7 @@ public record FileRef(Path path) {
         try (Stream<Path> stream = Files.list(path)) {
             return stream
                     .map(Path::toFile)
-                    .map(FileRef::new)
+                    .map(RealFile::new)
                     .filter(ref -> {
                         if (ref.isDirectory()) return true;
                         if (!filterByExtension) return true;
@@ -181,9 +143,7 @@ public record FileRef(Path path) {
     // Naming
     // ------------------
 
-    public String name() {
-        if (isVirtualRoot()) return "<virtual-root>";
-
+    public String name() {        
         Path fileName = path.getFileName();
         return fileName == null
                 ? path.toString()
@@ -200,12 +160,11 @@ public record FileRef(Path path) {
     // File ops
     // ------------------
 
-    public Optional<FileRef> rename(String name) {
-        if (isVirtualRoot()) return Optional.empty();
+    public Optional<RealFile> rename(String name) {
         try {
-            return Optional.of(new FileRef(Files.move(path, path.resolveSibling(name), REPLACE_EXISTING)));
+            return Optional.of(new RealFile(Files.move(path, path.resolveSibling(name), REPLACE_EXISTING)));
         } catch (IOException ex) {
-            Logger.getLogger(FileRef.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RealFile.class.getName()).log(Level.SEVERE, null, ex);
             return Optional.empty();
         }
     }
@@ -228,37 +187,35 @@ public record FileRef(Path path) {
         return Arrays.asList(extensions).contains(fileExtension());
     }
 
-    public FileRef[] children(boolean includeHidden, ExploreType exploreType, FileExtensions extensions) {
-        if (isVirtualRoot()) return new FileRef[0];
-
+    public RealFile[] children(boolean includeHidden, ExploreType exploreType, FileExtensions extensions) {        
         File directory = file();
         File[] files = switch (exploreType) {
             case FILE_EXPLORE -> directory.listFiles();
-            case FOLDER_EXPLORE -> directory.listFiles(f -> new FileRef(f).isDirectory());
+            case FOLDER_EXPLORE -> directory.listFiles(f -> new RealFile(f).isDirectory());
             case FILE_OR_FOLDER_EXPLORE -> extensions.hasExtensions()
                     ? directory.listFiles(f -> {
-                        FileRef ref = new FileRef(f);
+                        var ref = new RealFile(f);
                         return ref.isDirectory() || Arrays.stream(extensions.extensions()).anyMatch(ref::isFileExtension);
                     })
                     : directory.listFiles();
         };
 
-        return files == null ? new FileRef[0] :
+        return files == null ? new RealFile[0] :
                 Arrays.stream(files)
-                        .map(FileRef::new)
+                        .map(RealFile::new)
                         .filter(ref -> includeHidden || !ref.isHidden())
-                        .toArray(FileRef[]::new);
+                        .toArray(RealFile[]::new);
     }
 
-    public FileRef[] children(String... extensions) {
+    public RealFile[] children(String... extensions) {
         return children(false, FILE_OR_FOLDER_EXPLORE, new FileExtensions(extensions));
     }
 
-    public FileRef[] children(FileExtensions extensions) {
+    public RealFile[] children(FileExtensions extensions) {
         return children(false, FILE_OR_FOLDER_EXPLORE, extensions);
     }
 
-    public FileRef[] children(boolean includeHidden, String... extensions) {
+    public RealFile[] children(boolean includeHidden, String... extensions) {
         return children(includeHidden, FILE_OR_FOLDER_EXPLORE, new FileExtensions(extensions));
     }
 
@@ -266,50 +223,41 @@ public record FileRef(Path path) {
     // Utilities
     // ------------------
 
-    public String sizeReadable() {
-        if (isVirtualRoot()) return "-";
-
-        long bytes = file().length();
-        return switch ((int) (Math.log10(bytes == 0 ? 1 : bytes) / 3)) {
-            case 0 -> String.format("%1$3.3g  B", (float) bytes);
-            case 1 -> String.format("%1$3.3g KB", bytes / 1024f);
-            case 2 -> String.format("%1$3.3g MB", bytes / (1024f * 1024f));
-            case 3 -> String.format("%1$3.3g GB", bytes / (1024f * 1024f * 1024f));
-            case 4 -> String.format("%1$3.3g TB", bytes / (1024f * 1024f * 1024f * 1024f));
-            case 5 -> String.format("%1$3.3g PB", bytes / (1024f * 1024f * 1024f * 1024f * 1024f));
-            case 6 -> String.format("%1$3.3g EB", bytes / (1024f * 1024f * 1024f * 1024f * 1024f * 1024f));
-            default -> "Too large";
-        };
-    }
+    
 
     // ------------------
     // Equality & debug
     // ------------------
 
+    
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof FileRef other)) return false;
-
-        if (isVirtualRoot() && other.isVirtualRoot()) return true;
-        if (isVirtualRoot() || other.isVirtualRoot()) return false;
+        if (!(obj instanceof RealFile other)) return false;
 
         return IS_WINDOWS
-                ? path.toString().equalsIgnoreCase(other.path.toString())
-                : path.equals(other.path);
+                ? this.path.normalize().toString()
+                      .equalsIgnoreCase(other.path.normalize().toString())
+                : this.path.equals(other.path);
     }
-
+    
     @Override
-    public int hashCode() {
-        return isVirtualRoot() ? 0 : (
-                IS_WINDOWS
-                        ? path.toString().toLowerCase(Locale.ROOT).hashCode()
-                        : path.hashCode()
-        );
+    public final int hashCode() {
+        return IS_WINDOWS
+                ? path.normalize().toString()
+                      .toLowerCase(Locale.ROOT)
+                      .hashCode()
+                : path.hashCode();
     }
 
     @Override
     public String toString() {
         return name();
     }
+    
+    @Override
+    public boolean isVirtual() {
+        return false;
+    }
+    
 }

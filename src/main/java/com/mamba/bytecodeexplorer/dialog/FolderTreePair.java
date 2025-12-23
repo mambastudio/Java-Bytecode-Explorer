@@ -5,7 +5,7 @@
 package com.mamba.bytecodeexplorer.dialog;
 
 import com.mamba.bytecodeexplorer.file.FileExtensions;
-import com.mamba.bytecodeexplorer.file.FileRef;
+import com.mamba.bytecodeexplorer.file.type.FileRef;
 
 /**
  *

@@ -2,7 +2,8 @@ package com.mamba.bytecodeexplorer.tree.model;
 
 import com.mamba.bytecodeexplorer.core.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.file.FileExtensions;
-import com.mamba.bytecodeexplorer.file.FileRef;
+import com.mamba.bytecodeexplorer.file.type.FileRef;
+import com.mamba.bytecodeexplorer.file.type.RealFile;
 import java.nio.file.Path;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,11 +39,11 @@ public class FileRefModel extends AbstractFileRefTree<FileRefModel>{
     }
 
     public FileRefModel(Path path, String extension) {
-        this(new FileRef(path), new FileExtensions(extension));
+        this(new RealFile(path), new FileExtensions(extension));
     }
 
     public FileRefModel(String url, String extension) {
-        this(new FileRef(url), new FileExtensions(extension));
+        this(new RealFile(url), new FileExtensions(extension));
     }
 
     @Override
@@ -57,6 +58,7 @@ public class FileRefModel extends AbstractFileRefTree<FileRefModel>{
         if (children == null) {
             children = FXCollections.observableArrayList();
 
+            
             for (FileRef childRef : ref.children()) {
                 if (childRef.isDirectory() ||
                     (extensionsHolder.hasExtensions() && childRef.isFileExtension(extensionsHolder.extensions()))) {

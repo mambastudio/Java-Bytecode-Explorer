@@ -4,8 +4,8 @@
  */
 package com.mamba.bytecodeexplorer.core;
 
-import com.mamba.bytecodeexplorer.file.FileRef;
-import java.io.IO;
+import com.mamba.bytecodeexplorer.file.type.FileRef;
+import com.mamba.bytecodeexplorer.file.type.RealFile;
 
 /**
  *
@@ -15,16 +15,22 @@ import java.io.IO;
 public abstract class AbstractFileRefTree<Y extends FileRefTree<Y>>
         implements FileRefTree<Y> {
     
-    public boolean isDirectory(){        
-        return ref().isDirectory();
+    public boolean isDirectory(){     
+        if(!(ref() instanceof RealFile f))
+            return false;
+        return f.isDirectory();
     }
     
     public boolean isLeaf(){
-        return ref().isLeaf();
+        if(!(ref() instanceof RealFile f))
+            return false;
+        return f.isLeaf();
     }
     
     public boolean isTerminal(){
-        return ref() == null || ref().isLeaf();
+        if(!(ref() instanceof RealFile f))
+            return false;
+        return f.isLeaf();
     }
     
     public boolean isResolved() {
