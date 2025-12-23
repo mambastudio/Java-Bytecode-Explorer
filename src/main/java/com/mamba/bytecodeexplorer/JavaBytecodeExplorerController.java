@@ -9,9 +9,10 @@ import atlantafx.base.theme.NordLight;
 import com.mamba.bytecodeexplorer.dialog.FolderTreeDialog;
 import com.mamba.bytecodeexplorer.dialog.FolderTreePair;
 import com.mamba.bytecodeexplorer.tree.model.FileRefModel;
-import com.mamba.bytecodeexplorer.file.FileRef;
 import com.mamba.bytecodeexplorer.file.FileRefWatcher2;
 import com.mamba.bytecodeexplorer.file.FileRefWatcher2.FileEventListener.FileEvent.*;
+import com.mamba.bytecodeexplorer.file.type.FileRef;
+import com.mamba.bytecodeexplorer.file.type.RealFile;
 import com.mamba.bytecodeexplorer.tree.item.FileRefTreeItem;
 import com.mamba.bytecodeexplorer.tree.item.RootTreeItem;
 import com.mamba.bytecodeexplorer.tree.model.ClassRefModel;
@@ -19,8 +20,6 @@ import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
 import java.io.IO;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -125,7 +124,7 @@ public class JavaBytecodeExplorerController implements Initializable {
                 switch(e){
                     case Created(var dir, var file) -> {}
                     case Deleted(var dir, var file) -> {                         
-                        var fi = new FileRef(file);                                           
+                        var fi = new RealFile(file);                                           
                         var result = rootVirtualClass.findInTree2(fi);   
                         IO.println("-> " +fi);
                         IO.println(result);
@@ -133,7 +132,7 @@ public class JavaBytecodeExplorerController implements Initializable {
                     case Modified(var dir, var file) -> {IO.println("modified");}
                     case Overflow(var dir) -> {IO.println("overflow");}
                     case KeyInvalid(var dir) -> {IO.println("invalid");}
-                    case DirectoryRevalidated(var dir) -> {IO.println(new FileRef(dir)+ " revalidated");}
+                    case DirectoryRevalidated(var dir) -> {IO.println(new RealFile(dir)+ " revalidated");}
                 }
             });
             

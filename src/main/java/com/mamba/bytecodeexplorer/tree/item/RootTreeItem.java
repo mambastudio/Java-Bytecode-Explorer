@@ -6,6 +6,7 @@ package com.mamba.bytecodeexplorer.tree.item;
 
 import com.mamba.bytecodeexplorer.core.FileRefTree;
 import com.mamba.bytecodeexplorer.core.Tree;
+import com.mamba.bytecodeexplorer.file.type.RealFile;
 import java.util.function.Function;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
@@ -83,19 +84,27 @@ public class RootTreeItem<S extends Tree<?, S>,  Q extends RecursiveTreeItem<S>>
     public static<S extends FileRefTree<S>> RootTreeItem<S, FileRefTreeItem<S>> ofFileRef(S model){
         Callback<S, Node> graphicsFactory = fileRef -> {
             StackedFontIcon fontIcon = new StackedFontIcon();            
-            if(fileRef.ref().isDirectory() && fileRef.ref().isDirectoryEmpty(".class")){
+            if(fileRef.ref() instanceof RealFile f){
+                
+                if(f.isDirectory() && f.isDirectoryEmpty(".class")){
+                    FontIcon icon = new FontIcon("mdal-folder");
+                    fontIcon.getChildren().add(icon);
+                }
+                else if(f.isDirectory()){
+                    FontIcon icon = new FontIcon("mdoal-create_new_folder");
+                    fontIcon.getChildren().add(icon);                
+                }
+                else if(!f.isDirectory()){
+                    FontIcon icon = new FontIcon("mdoal-code");
+                    fontIcon.getChildren().add(icon);
+                }
+                return fontIcon;
+            }
+            else{
                 FontIcon icon = new FontIcon("mdal-folder");
                 fontIcon.getChildren().add(icon);
+                return fontIcon;
             }
-            else if(fileRef.ref().isDirectory()){
-                FontIcon icon = new FontIcon("mdoal-create_new_folder");
-                fontIcon.getChildren().add(icon);                
-            }
-            else if(!fileRef.ref().isDirectory()){
-                FontIcon icon = new FontIcon("mdoal-code");
-                fontIcon.getChildren().add(icon);
-            }
-            return fontIcon;
         };
         
         return ofFileRef(model, graphicsFactory);

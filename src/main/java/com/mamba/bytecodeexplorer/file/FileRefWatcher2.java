@@ -6,6 +6,7 @@ package com.mamba.bytecodeexplorer.file;
 
 import com.mamba.bytecodeexplorer.core.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.file.FileRefWatcher2.FileEventListener.FileEvent;
+import com.mamba.bytecodeexplorer.file.type.RealFile;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
@@ -26,8 +27,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -138,8 +137,8 @@ public class FileRefWatcher2 {
         if (tree.isTerminal())
             return;
 
-        if(tree.ref().isDirectory()){ //to avoid virtualroot
-            var dir = tree.ref().path();
+        if(tree.ref() instanceof RealFile f && f.isDirectory()){ //to avoid virtualroot
+            var dir = f.path();
             watch(dir, listener); // your existing method
         }
                 
@@ -177,16 +176,16 @@ public class FileRefWatcher2 {
         if(tree.isTerminal())
             return;
 
-        if(tree.isDirectory()){ //to avoid virtualroot
+        if(tree.isDirectory() && tree.ref() instanceof RealFile f){ //to avoid virtualroot
             // 1. Unregister this directory
-            var dir = tree.ref().path();
+            var dir = f.path();
             unwatch(dir); // your existing method to cancel the watch key
         }
 
         // 2. Recursively unregister children that are directories
         for (var child : tree.children()) {
             var childRef = child.ref();
-            if (childRef != null && childRef.isDirectory()) {
+            if (childRef instanceof RealFile f && f.isDirectory()) {
                 unwatchTree((AbstractFileRefTree<?>) child);
             }
         }

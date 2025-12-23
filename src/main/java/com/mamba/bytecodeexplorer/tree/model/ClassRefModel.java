@@ -6,6 +6,8 @@ package com.mamba.bytecodeexplorer.tree.model;
 
 import com.mamba.bytecodeexplorer.core.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.file.type.FileRef;
+import com.mamba.bytecodeexplorer.file.type.RealFile;
+import com.mamba.bytecodeexplorer.file.type.VirtualFile;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,17 +26,18 @@ public class ClassRefModel extends AbstractFileRefTree<ClassRefModel>{
         
         switch(createChildren){
             case true -> {               
-                this.children = FXCollections.observableArrayList();                
-                for(FileRef r : ref.children(".class"))
-                    if(r.isLeaf())
-                        this.children.add(new ClassRefModel(r, false));                    
+                this.children = FXCollections.observableArrayList();     
+                if(ref instanceof RealFile f)
+                    for(var r : f.children(".class"))
+                        if(r.isLeaf())
+                            this.children.add(new ClassRefModel(r, false));                    
             }
             case false ->this.children = FXCollections.observableArrayList();            
         }
     }
     
     public ClassRefModel(){
-        this(FileRef.virtualRoot(), false);
+        this(new VirtualFile(), false);
     }
 
     @Override
