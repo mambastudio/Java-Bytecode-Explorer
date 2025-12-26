@@ -106,7 +106,7 @@ public class FolderTreeDialogPane extends HBox {
         folderExploreTreeView.setShowRoot(false); 
         
         folderExploreTreeView.getSelectionModel().selectedItemProperty().addListener((o, ov, nv) ->{
-            //var f = Optional.<FileRef>ofNullable(nv.getValue().ref());  
+            var f = Optional.<FileRef>ofNullable(nv.getValue().ref());  
             if(!())
             switch(f.isPresent() && f.get().isLeaf()){
                 case true -> folderExploreSelectedProperty.set(f.get().parent().get());

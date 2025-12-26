@@ -4,7 +4,7 @@
  */
 package com.mamba.bytecodeexplorer.filewatcher;
 
-import com.mamba.bytecodeexplorer.file.FileRef;
+import com.mamba.bytecodeexplorer.file.type.RealFile;
 import com.mamba.bytecodeexplorer.tree.model.ClassRefModel;
 import java.io.IO;
 
@@ -19,18 +19,18 @@ public class ModelSearch {
     
     public void test1(){
         var root = new ClassRefModel();
-        var model = new ClassRefModel(new FileRef("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap"), false);
-        model.addChild(new ClassRefModel(new FileRef("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap\\build\\modules\\bitmap\\bitmap"), true));
+        var model = new ClassRefModel(new RealFile("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap"), false);
+        model.addChild(new ClassRefModel(new RealFile("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap\\build\\modules\\bitmap\\bitmap"), true));
         root.addChild(model);
         
-        var f = new FileRef("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap\\build\\modules\\bitmap\\bitmap\\XYZ.class");
+        var f = new RealFile("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap\\build\\modules\\bitmap\\bitmap\\XYZ.class");
         
         IO.println(root.findInTree2(f).isPresent());
     }
     
     public void test2(){
-        var parent = new FileRef("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap\\build\\modules\\bitmap\\bitmap");
-        var child = new FileRef("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap\\build\\modules\\bitmap\\bitmap\\XYZ.class");
+        var parent = new RealFile("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap\\build\\modules\\bitmap\\bitmap");
+        var child = new RealFile("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap\\build\\modules\\bitmap\\bitmap\\XYZ.class");
         
         IO.println(parent.isAncestorOf(child));
         IO.println(child.path().startsWith(parent.path()));
