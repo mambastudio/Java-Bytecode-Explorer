@@ -4,6 +4,8 @@
  */
 package com.mamba.bytecodeexplorer;
 
+import com.mamba.bytecodeexplorer.bytecodeinfo.FieldInfo;
+import com.mamba.bytecodeexplorer.bytecodeinfo.MethodModelInfo;
 import java.io.IO;
 import static java.io.IO.println;
 import java.io.IOException;
@@ -15,16 +17,22 @@ import java.lang.classfile.Instruction;
 import java.lang.classfile.MethodModel;
 import java.lang.classfile.instruction.ArrayLoadInstruction;
 import java.lang.classfile.instruction.ArrayStoreInstruction;
+import java.lang.classfile.instruction.BranchInstruction;
 import java.lang.classfile.instruction.ConstantInstruction;
 import java.lang.classfile.instruction.ConstantInstruction.ArgumentConstantInstruction;
 import java.lang.classfile.instruction.ConstantInstruction.IntrinsicConstantInstruction;
 import java.lang.classfile.instruction.ConstantInstruction.LoadConstantInstruction;
 import java.lang.classfile.instruction.FieldInstruction;
+import java.lang.classfile.instruction.IncrementInstruction;
 import java.lang.classfile.instruction.InvokeInstruction;
 import java.lang.classfile.instruction.LoadInstruction;
 import java.lang.classfile.instruction.NewReferenceArrayInstruction;
+import java.lang.classfile.instruction.OperatorInstruction;
 import java.lang.classfile.instruction.ReturnInstruction;
 import java.lang.classfile.instruction.StackInstruction;
+import java.lang.classfile.instruction.StoreInstruction;
+import java.lang.constant.ClassDesc;
+import java.lang.constant.MethodTypeDesc;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -102,45 +110,68 @@ public class TestClassFile {
                 if(cElement instanceof Instruction inst){
                     String opcodeStr = inst.opcode().toString().toLowerCase();
                     switch(inst){
-                        case InvokeInstruction is -> builder.append(formatOpcodeLine(opcodeStr, friendly(is))).append("\n");
+                        case InvokeInstruction is -> builder.append(friendly(is)).append("\n");
                         case LoadInstruction li -> builder.append(formatOpcodeLine(opcodeStr, "slot " +li.slot())).append("\n");
+                        case StoreInstruction si -> builder.append(formatOpcodeLine(opcodeStr, "slot " + si.slot())).append("\n");
+                        case IncrementInstruction ii -> builder.append(formatOpcodeLine(opcodeStr, "slot " + ii.slot())).append("\n");
                         case ConstantInstruction ci -> {
                             switch(ci){ //exhaustive
                                 case LoadConstantInstruction lci -> builder.append(formatOpcodeLine(opcodeStr, lci.constantValue().toString())).append("\n");   
-                                case IntrinsicConstantInstruction _ -> builder.append(opcodeStr).append("\n");
+                                case IntrinsicConstantInstruction ici -> builder.append(formatOpcodeLine(opcodeStr, ici.constantValue().toString())).append("\n");
                                 case ArgumentConstantInstruction acc -> builder.append(formatOpcodeLine(opcodeStr, acc.constantValue().toString())).append("\n");
                             }
                         }  
                         case NewReferenceArrayInstruction nra -> builder.append(formatOpcodeLine(opcodeStr, new NewReferenceArrayInstructionInfo(nra).toString())).append("\n");
                         case StackInstruction _ -> builder.append(opcodeStr).append("\n");
                         case FieldInstruction fi -> builder.append(formatOpcodeLine(opcodeStr, friendly(fi))).append("\n");
-                        case ArrayStoreInstruction _-> builder.append(opcodeStr).append("\n");
-                        case ArrayLoadInstruction _-> builder.append(opcodeStr).append("\n");
-                        case ReturnInstruction _ -> builder.append(opcodeStr).append("\n");
-                        default -> builder.append(inst).append("\n");
+                        case ArrayStoreInstruction asi-> builder.append(formatOpcodeLine(opcodeStr, asi.typeKind().name().toLowerCase())).append("\n");
+                        case ArrayLoadInstruction ali-> builder.append(formatOpcodeLine(opcodeStr, ali.typeKind().name().toLowerCase())).append("\n");
+                        case ReturnInstruction ri -> builder.append(formatOpcodeLine(opcodeStr, ri.typeKind().name().toLowerCase())).append("\n");
+                        case BranchInstruction b -> builder.append(formatOpcodeLine(opcodeStr, b.target().toString())).append("\n"); //Need proper display in future
+                        case OperatorInstruction oi -> builder.append(formatOpcodeLine(opcodeStr, oi.typeKind().name().toLowerCase())).append("\n");
+
+                        default -> builder.append(inst).append(inst.getClass().getName()).append("\n");
                     }
                 }
             }
         }
         return builder.toString();
     }
-    
-    private String friendly(InvokeInstruction is){     
         
-        return switch(is.opcode().toString().toLowerCase()){ 
-            case "invokeinterface", "invokestatic", "invokespecial" -> new InvokeInstructionInfo(is).toString();
-            default -> is.toString();
-        };
-    }
-    
-    private String friendly(FieldInstruction fis){
+    private String friendly(FieldInstruction fis){        
         return switch(fis.opcode().toString().toLowerCase()){
-            case "getstatic", "putfield", "getfield" -> new FieldInfo(fis).toString();  
+            case "putstatic", "getstatic", "putfield", "getfield" -> new FieldInfo(fis).toString();  
             default -> fis.toString();
         };
     }
     
     private String formatOpcodeLine(String opcode, String info) {
         return String.format("%-15s -> %s", opcode, info);
+    } 
+
+    private String friendly(InvokeInstruction ii) {
+        String opcode = ii.opcode().name().toLowerCase();
+        var ref = ii.method();
+        
+        String owner =
+            ref.owner().name().stringValue().replace('/', '.');
+
+        String name =
+            ref.name().stringValue();
+
+        MethodTypeDesc mtd =
+            MethodTypeDesc.ofDescriptor(ref.type().stringValue());
+
+        String params = mtd.parameterList().stream()
+            .map(ClassDesc::displayName)
+            .reduce((a, b) -> a + ", " + b)
+            .orElse("");
+
+        String ret = mtd.returnType().displayName();
+
+        return String.format(
+                "%-15s -> %s.%s(%s) : %s",
+                opcode, owner, name, params, ret);
+
     }     
 }

@@ -1,10 +1,10 @@
-C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\FieldInfo.java
+C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\bytecodeinfo\MethodModelInfo.java
+C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\bytecodeinfo\FieldInfo.java
 C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\UtilBytecode.java
 C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\ModalApplication.java
+C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\bytecodeinfo\InvokeInstructionInfo.java
 C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\filewatcher\ModelSearch.java
 C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\ModalLauncher.java
-C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\InvokeInstructionInfo.java
-C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\MethodModelInfo.java
 C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\NewReferenceArrayInstructionInfo.java
 C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\file\TestFile.java
 C:\Users\joemw\OneDrive\Documents\GitHub\Java-Bytecode-Explorer\src\test\java\com\mamba\bytecodeexplorer\TestClassFile.java

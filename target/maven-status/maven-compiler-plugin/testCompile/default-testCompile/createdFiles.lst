@@ -1,11 +1,11 @@
 com\mamba\bytecodeexplorer\file\TestFile.class
+com\mamba\bytecodeexplorer\bytecodeinfo\InvokeInstructionInfo.class
 com\mamba\bytecodeexplorer\ModalLauncher.class
 com\mamba\bytecodeexplorer\NewReferenceArrayInstructionInfo.class
 com\mamba\bytecodeexplorer\filewatcher\ModelSearch.class
 com\mamba\bytecodeexplorer\ModalApplication.class
-com\mamba\bytecodeexplorer\MethodModelInfo.class
 com\mamba\bytecodeexplorer\TestClassFile.class
-com\mamba\bytecodeexplorer\FieldInfo.class
-com\mamba\bytecodeexplorer\InvokeInstructionInfo.class
+com\mamba\bytecodeexplorer\bytecodeinfo\FieldInfo.class
+com\mamba\bytecodeexplorer\bytecodeinfo\MethodModelInfo.class
 com\mamba\bytecodeexplorer\UtilBytecode.class
 com\mamba\bytecodeexplorer\filewatcher\TestModel.class
