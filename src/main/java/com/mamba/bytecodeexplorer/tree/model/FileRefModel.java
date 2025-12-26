@@ -4,6 +4,7 @@ import com.mamba.bytecodeexplorer.core.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.file.FileExtensions;
 import com.mamba.bytecodeexplorer.file.type.FileRef;
 import com.mamba.bytecodeexplorer.file.type.RealFile;
+import com.mamba.bytecodeexplorer.file.type.VirtualFile;
 import java.nio.file.Path;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -54,12 +55,17 @@ public class FileRefModel extends AbstractFileRefTree<FileRefModel>{
     @Override
     public ObservableList<FileRefModel> children() {
         if (ref == null) return FXCollections.emptyObservableList();
-
+        
+        if(ref instanceof VirtualFile)
+            children = FXCollections.observableArrayList();
+        
         if (children == null) {
             children = FXCollections.observableArrayList();
-
             
-            for (FileRef childRef : ref.children()) {
+            if(!(ref instanceof RealFile f))
+                return children;
+            
+            for (RealFile childRef : f.children()) {
                 if (childRef.isDirectory() ||
                     (extensionsHolder.hasExtensions() && childRef.isFileExtension(extensionsHolder.extensions()))) {
                     children.add(new FileRefModel(childRef, extensionsHolder));

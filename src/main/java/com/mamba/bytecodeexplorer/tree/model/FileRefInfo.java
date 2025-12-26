@@ -7,6 +7,7 @@ package com.mamba.bytecodeexplorer.tree.model;
 import com.mamba.bytecodeexplorer.core.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.file.FileExtensions;
 import com.mamba.bytecodeexplorer.file.type.FileRef;
+import com.mamba.bytecodeexplorer.file.type.RealFile;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,10 +37,13 @@ public class FileRefInfo extends AbstractFileRefTree<FileRefInfo>{
     }
      
     public void reloadSystemChildren(){
-        if(fileRef.exists() && fileRef.isDirectory()){
-            FileRef[] childrenFileRef = fileRef.children(extensions);
+        if(!(fileRef instanceof RealFile f))
+            return;
+          
+        if(f.exists() && f.isDirectory()){
+            RealFile[] childrenFileRef = f.children(extensions);
             children.clear();
-            for(FileRef ref : childrenFileRef){
+            for(RealFile ref : childrenFileRef){
                 if(ref.isLeaf())
                     children.add(new FileRefInfo(ref));
             }

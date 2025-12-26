@@ -9,8 +9,8 @@ import atlantafx.base.theme.NordLight;
 import com.mamba.bytecodeexplorer.dialog.FolderTreeDialog;
 import com.mamba.bytecodeexplorer.dialog.FolderTreePair;
 import com.mamba.bytecodeexplorer.tree.model.FileRefModel;
-import com.mamba.bytecodeexplorer.file.FileRefWatcher2;
-import com.mamba.bytecodeexplorer.file.FileRefWatcher2.FileEventListener.FileEvent.*;
+import com.mamba.bytecodeexplorer.file.FileRefWatcher;
+import com.mamba.bytecodeexplorer.file.FileRefWatcher.FileEventListener.FileEvent.*;
 import com.mamba.bytecodeexplorer.file.type.FileRef;
 import com.mamba.bytecodeexplorer.file.type.RealFile;
 import com.mamba.bytecodeexplorer.tree.item.FileRefTreeItem;
@@ -49,7 +49,7 @@ public class JavaBytecodeExplorerController implements Initializable {
     @FXML
     StackPane root;
     
-    FileRefWatcher2 watcher = new FileRefWatcher2();
+    FileRefWatcher watcher = new FileRefWatcher();
     FolderTreeDialog folderTreeDialog = new FolderTreeDialog();
     InformationDialog aboutDialog = new InformationDialog("Java bytecode viewer to assess code ops realtime");
     
