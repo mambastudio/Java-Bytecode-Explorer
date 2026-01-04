@@ -25,7 +25,7 @@ public class ModelSearch {
         
         var f = new RealFile("C:\\Users\\user\\Documents\\NetBeansProjects\\Bitmap\\build\\modules\\bitmap\\bitmap\\XYZ.class");
         
-        IO.println(root.findInTree2(f).isPresent());
+        IO.println(root.findInTree(f).isPresent());
     }
     
     public void test2(){

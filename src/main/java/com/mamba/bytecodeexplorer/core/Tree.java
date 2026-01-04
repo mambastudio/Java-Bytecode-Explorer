@@ -16,20 +16,15 @@ import javafx.collections.ObservableList;
 public interface Tree<X, Y extends Tree<X,Y>> {
     X ref(); //TODO: Optional<X>
     ObservableList<Y> children();   
-    
-    Optional<Y> findInTree(X x);    
-    default Optional<Y> findInTree(Y y){
+        
+    default TreeRelation<X, Y> findInTree(Y y){      
         return findInTree(y.ref());
     }
     
-    default Relation<X> findInTree2(Y y){      
-        return findInTree2(y.ref());
-    }
-    
-    default Relation<X> findInTree2(X x){
+    default TreeRelation<X, Y> findInTree(X x){
         return null;
     }
-        
+    
     default boolean remove(X x) {        
         return false;
     }   

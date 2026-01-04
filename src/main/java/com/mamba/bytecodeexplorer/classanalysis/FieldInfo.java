@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Record.java to edit this template
  */
-package com.mamba.bytecodeexplorer.bytecodeinfo;
+package com.mamba.bytecodeexplorer.classanalysis;
 
 import java.lang.classfile.instruction.FieldInstruction;
 import java.lang.constant.ClassDesc;

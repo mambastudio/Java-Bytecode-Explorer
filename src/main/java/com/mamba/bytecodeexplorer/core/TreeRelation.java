@@ -8,17 +8,17 @@ package com.mamba.bytecodeexplorer.core;
  *
  * @author joemw
  */
-public record Relation<T> (T parent, T child){
-    private Relation(){
-        this(null, null);
+public record TreeRelation<X, Y extends Tree<X,Y>> (Y tree, X parent, X child){
+    private TreeRelation(){
+        this(null, null, null);
     }
     
-    public static<T> Relation<T> empty(){
-        return new Relation();
+    public static<X, Y extends Tree<X,Y>> TreeRelation<X, Y> empty(){
+        return new TreeRelation();
     }
     
-    public static<T> Relation<T> asChild(T child){
-        return new Relation(null, child);
+    public static<X, Y extends Tree<X,Y>> TreeRelation<X, Y> asChild(Y y, X child){
+        return new TreeRelation(y, null, child);
     }
     
     public boolean hasParent(){
@@ -27,5 +27,9 @@ public record Relation<T> (T parent, T child){
         
     public boolean isPresent(){
         return child != null;
+    }
+    
+    public boolean hasModel(){
+        return tree != null;
     }
 }

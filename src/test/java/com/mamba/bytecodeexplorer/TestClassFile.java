@@ -4,8 +4,8 @@
  */
 package com.mamba.bytecodeexplorer;
 
-import com.mamba.bytecodeexplorer.bytecodeinfo.FieldInfo;
-import com.mamba.bytecodeexplorer.bytecodeinfo.MethodModelInfo;
+import com.mamba.bytecodeexplorer.classanalysis.FieldInfo;
+import com.mamba.bytecodeexplorer.classanalysis.MethodModelInfo;
 import java.io.IO;
 import static java.io.IO.println;
 import java.io.IOException;
@@ -89,7 +89,7 @@ public class TestClassFile {
                                 case ArgumentConstantInstruction acc -> println(formatOpcodeLine(opcodeStr, acc.constantValue().toString()));
                             }
                         }  
-                        case NewReferenceArrayInstruction nra -> println(formatOpcodeLine(opcodeStr, new NewReferenceArrayInstructionInfo(nra).toString()));
+                        case NewReferenceArrayInstruction nra -> println(formatOpcodeLine(opcodeStr, friendly(nra)));
                         case StackInstruction _ -> println(opcodeStr);
                         case FieldInstruction fi -> println(formatOpcodeLine(opcodeStr, friendly(fi)));
                         case ArrayStoreInstruction _-> println(opcodeStr);
@@ -121,7 +121,7 @@ public class TestClassFile {
                                 case ArgumentConstantInstruction acc -> builder.append(formatOpcodeLine(opcodeStr, acc.constantValue().toString())).append("\n");
                             }
                         }  
-                        case NewReferenceArrayInstruction nra -> builder.append(formatOpcodeLine(opcodeStr, new NewReferenceArrayInstructionInfo(nra).toString())).append("\n");
+                        case NewReferenceArrayInstruction nra -> builder.append(formatOpcodeLine(opcodeStr, friendly(nra))).append("\n");
                         case StackInstruction _ -> builder.append(opcodeStr).append("\n");
                         case FieldInstruction fi -> builder.append(formatOpcodeLine(opcodeStr, friendly(fi))).append("\n");
                         case ArrayStoreInstruction asi-> builder.append(formatOpcodeLine(opcodeStr, asi.typeKind().name().toLowerCase())).append("\n");
@@ -172,6 +172,15 @@ public class TestClassFile {
         return String.format(
                 "%-15s -> %s.%s(%s) : %s",
                 opcode, owner, name, params, ret);
+    }  
+    
+    private String friendly(NewReferenceArrayInstruction nra) {
+        String component =
+            nra.componentType()
+               .name()
+               .stringValue()
+               .replace('/', '.');
 
-    }     
+        return String.format("%s[]", component);
+    }
 }

@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Record.java to edit this template
  */
-package com.mamba.bytecodeexplorer.bytecodeinfo;
+package com.mamba.bytecodeexplorer.classanalysis;
 
-import static com.mamba.bytecodeexplorer.UtilBytecode.methodModifiers;
+import static com.mamba.bytecodeexplorer.classanalysis.UtilBytecode.methodModifiers;
 import java.lang.classfile.AccessFlags;
 import java.lang.classfile.Attributes;
 import java.lang.classfile.MethodModel;
@@ -25,6 +25,10 @@ public record MethodModelInfo(MethodModel mm) {
 
     public MethodModelInfo {
         Objects.requireNonNull(mm);
+    }
+    
+    public String methodName(){
+        return mm.methodName().stringValue();
     }
 
     public String methodSource() {

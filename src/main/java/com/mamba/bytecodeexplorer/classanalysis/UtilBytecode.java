@@ -2,17 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mamba.bytecodeexplorer;
+package com.mamba.bytecodeexplorer.classanalysis;
 
 import java.lang.classfile.AccessFlags;
-import java.lang.classfile.Attributes;
-import java.lang.classfile.MethodModel;
-import java.lang.classfile.constantpool.Utf8Entry;
-import java.lang.constant.ClassDesc;
-import java.lang.constant.MethodTypeDesc;
 import java.lang.reflect.AccessFlag;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -36,5 +32,15 @@ public class UtilBytecode {
         return mods;
     }
     
+    public static String toBinaryClassName(String className){
+        Objects.requireNonNull(className);
+        int index = className.lastIndexOf('/');
+        return index >= 0 ? className.substring(index + 1) : className;
+    }
     
+    public static String toSimpleName(String className){
+        Objects.requireNonNull(className);
+        int index = className.lastIndexOf('$');
+        return index >= 0 ? className.substring(index + 1) : className;
+    }
 }

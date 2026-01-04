@@ -47,7 +47,6 @@ public class FileRefWatcher {
     private static final class DirState {
         WatchKey key;
         final List<FileEventListener> listeners = new CopyOnWriteArrayList<>();
-        FileRefMeta meta; // metadata associated with this directory
         
         DirState(WatchKey key) {
             this.key = key;
@@ -59,7 +58,9 @@ public class FileRefWatcher {
      * Stores the timestamp of invalidation and the listeners
      * that must be restored if the directory reappears.
      */
-    private record InvalidationInfo(long timestamp, List<FileEventListener> retainedListeners, FileRefMeta retainedMeta) {}
+    private record InvalidationInfo(long timestamp, List<FileEventListener> retainedListeners) {}
+    
+    private final Map<Path, FileRefMeta> metaMap = new ConcurrentHashMap<>();
     
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
             r -> {
@@ -79,8 +80,8 @@ public class FileRefWatcher {
     private long delayTimeMilliseconds = 100;
     private long recheckDelayMillis = 1_000; // 1 seconds
     private long maxRecheckDurationMillis = 5_000; // 5 seconds total retry window
-               
-    public FileRefWatcher() {
+    
+    public FileRefWatcher(){
         try {
             this.watcher = FileSystems.getDefault().newWatchService();
         } catch (IOException ex) {
@@ -109,14 +110,12 @@ public class FileRefWatcher {
         return states.containsKey(path);
     }
     
-    public FileRefMeta getMeta(Path dir) {
-        DirState ds = states.get(dir);
-        return ds != null ? ds.meta : null;
+    public Map<Path, FileRefMeta> metaMap(){
+        return metaMap;
     }
-
-    public void setMeta(Path dir, FileRefMeta meta) {
-        DirState ds = states.get(dir);
-        if (ds != null) ds.meta = meta;
+    
+    public int statesCountWatched(){
+        return states.size();
     }
     
     public void watch(Path dir, FileEventListener listener) {
@@ -223,8 +222,7 @@ public class FileRefWatcher {
             invalidations.put(dir,
                     new InvalidationInfo(
                             System.currentTimeMillis(),
-                            state.listeners,
-                            state.meta));
+                            state.listeners));
 
             // notify listeners about invalidation
             for (FileEventListener l : state.listeners) {
@@ -245,17 +243,17 @@ public class FileRefWatcher {
         
         if (Files.exists(dir) && Files.isDirectory(dir)) {
             // Directory reappeared
-            DirState state = registerDir(dir);
+            DirState newState = registerDir(dir);
 
             if (info.retainedListeners != null) {
-                state.listeners.addAll(info.retainedListeners);
+                newState.listeners.addAll(info.retainedListeners);
             }
-
-            states.put(dir, state);
+            
+            states.put(dir, newState);
             invalidations.remove(dir);
 
             FileEvent ev = new FileEvent.DirectoryRevalidated(dir);
-            for (FileEventListener l : state.listeners) {
+            for (FileEventListener l : newState.listeners) {
                 scheduler.schedule(() -> l.onEvent(ev),
                         delayTimeMilliseconds, TimeUnit.MILLISECONDS);
             }
@@ -289,19 +287,19 @@ public class FileRefWatcher {
     }
     
     @SuppressWarnings("unchecked")
-    private FileEvent toFileEvent(Path dir, WatchEvent<?> event) {
+    private FileEvent toFileEvent(Path parent, WatchEvent<?> event) {
         WatchEvent.Kind<?> kind = event.kind();
 
         if (kind == OVERFLOW) {
-            return new FileEventListener.FileEvent.Overflow(dir);
+            return new FileEventListener.FileEvent.Overflow(parent);
         }
 
         Path file = ((WatchEvent<Path>) event).context();
-        Path absolute = dir.resolve(file);
+        Path child = parent.resolve(file);
 
-        if (kind == ENTRY_CREATE) return new FileEvent.Created(dir, absolute);
-        if (kind == ENTRY_DELETE) return new FileEvent.Deleted(dir, absolute);
-        if (kind == ENTRY_MODIFY) return new FileEvent.Modified(dir, absolute);
+        if (kind == ENTRY_CREATE) return new FileEvent.Created(parent, child);
+        if (kind == ENTRY_DELETE) return new FileEvent.Deleted(parent, child);
+        if (kind == ENTRY_MODIFY) return new FileEvent.Modified(parent, child);
 
         throw new IllegalArgumentException("Unknown event: " + kind);
     }
@@ -320,14 +318,14 @@ public class FileRefWatcher {
         public void onEvent(FileEvent event);
 
         public sealed interface FileEvent {
-            Path dir();
+            Path parent();
 
-            record Created(Path dir, Path file) implements FileEvent {}
-            record Deleted(Path dir, Path file) implements FileEvent {}
-            record Modified(Path dir, Path file) implements FileEvent {}
-            record Overflow(Path dir) implements FileEvent {}
-            record KeyInvalid(Path dir) implements FileEvent {}
-            record DirectoryRevalidated(Path dir) implements FileEvent {}
+            record Created(Path parent, Path file) implements FileEvent {}
+            record Deleted(Path parent, Path file) implements FileEvent {}
+            record Modified(Path parent, Path file) implements FileEvent {}
+            record Overflow(Path parent) implements FileEvent {}
+            record KeyInvalid(Path parent) implements FileEvent {}
+            record DirectoryRevalidated(Path parent) implements FileEvent {}
         }
     }
 }

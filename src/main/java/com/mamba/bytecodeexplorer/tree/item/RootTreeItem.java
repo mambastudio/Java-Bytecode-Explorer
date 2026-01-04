@@ -7,6 +7,7 @@ package com.mamba.bytecodeexplorer.tree.item;
 import com.mamba.bytecodeexplorer.core.FileRefTree;
 import com.mamba.bytecodeexplorer.core.Tree;
 import com.mamba.bytecodeexplorer.file.type.RealFile;
+import java.util.Optional;
 import java.util.function.Function;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
@@ -36,13 +37,13 @@ public class RootTreeItem<S extends Tree<?, S>,  Q extends RecursiveTreeItem<S>>
     public Q rootTreeItem() {
         return rootTreeItem;
     }
-    
+       
     public TreeItem<S> withNullRootItem(){
         var root = new TreeItem<S>(null);
         root.getChildren().add(rootTreeItem);
         return root;
     }
-    
+        
     public void setExpanded(boolean expanded){
         rootTreeItem.setExpanded(expanded);
     }
