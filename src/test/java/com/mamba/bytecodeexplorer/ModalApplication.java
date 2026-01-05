@@ -5,10 +5,7 @@
 package com.mamba.bytecodeexplorer;
 
 import atlantafx.base.theme.NordDark;
-import atlantafx.base.theme.NordLight;
-import com.mamba.mambaui.MambauiTheme;
 import com.mamba.mambaui.modal.ModalDialogs;
-import java.io.IO;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;

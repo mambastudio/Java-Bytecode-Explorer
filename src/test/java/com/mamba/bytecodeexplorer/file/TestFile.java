@@ -7,7 +7,6 @@ package com.mamba.bytecodeexplorer.file;
 import com.mamba.bytecodeexplorer.file.type.FileRef;
 import com.mamba.bytecodeexplorer.file.type.RealFile;
 import com.mamba.bytecodeexplorer.file.type.VirtualFile;
-import java.io.IO;
 
 /**
  *

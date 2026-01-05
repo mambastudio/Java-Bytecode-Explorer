@@ -6,7 +6,6 @@ package com.mamba.bytecodeexplorer.filewatcher;
 
 import com.mamba.bytecodeexplorer.file.type.RealFile;
 import com.mamba.bytecodeexplorer.tree.model.ClassRefModel;
-import java.io.IO;
 
 /**
  *

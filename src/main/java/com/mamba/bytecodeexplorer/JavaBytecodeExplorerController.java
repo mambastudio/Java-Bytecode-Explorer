@@ -4,6 +4,8 @@
  */
 package com.mamba.bytecodeexplorer;
 
+import module java.base;
+
 import atlantafx.base.theme.NordDark;
 import atlantafx.base.theme.NordLight;
 import com.mamba.bytecodeexplorer.classanalysis.ClassAnalysis;
@@ -20,7 +22,6 @@ import com.mamba.bytecodeexplorer.tree.item.RootTreeItem;
 import com.mamba.bytecodeexplorer.tree.model.ClassRefMeta;
 import com.mamba.bytecodeexplorer.tree.model.ClassRefModel;
 import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
-import java.io.IO;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;

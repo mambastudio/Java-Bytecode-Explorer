@@ -6,9 +6,8 @@ package com.mamba.bytecodeexplorer;
 
 import com.mamba.bytecodeexplorer.classanalysis.FieldInfo;
 import com.mamba.bytecodeexplorer.classanalysis.MethodModelInfo;
-import java.io.IO;
-import static java.io.IO.println;
 import java.io.IOException;
+import static java.lang.IO.println;
 import java.lang.classfile.ClassFile;
 import java.lang.classfile.ClassModel;
 import java.lang.classfile.CodeElement;
