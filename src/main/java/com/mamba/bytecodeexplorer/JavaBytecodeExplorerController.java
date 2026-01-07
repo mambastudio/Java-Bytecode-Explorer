@@ -4,7 +4,6 @@
  */
 package com.mamba.bytecodeexplorer;
 
-import module java.base;
 
 import atlantafx.base.theme.NordDark;
 import atlantafx.base.theme.NordLight;
@@ -39,6 +38,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -84,6 +84,8 @@ public class JavaBytecodeExplorerController implements Initializable {
         tabPaneView.getTabs().add(classViewer.tab());
         
         root.getChildren().addAll(folderTreeDialog, aboutDialog);
+        
+        classAspectListView.setPlaceholder(new Label("<Empty>"));
         
         classAspectCombo.setItems(FXCollections.observableArrayList(ClassAspect.values()));
         classAspectCombo.getSelectionModel().select(ClassAspect.METHODS);
@@ -215,7 +217,7 @@ public class JavaBytecodeExplorerController implements Initializable {
                 }
             });
             
-            this.rootT = RootTreeItem.<ClassRefModel>ofFileRef(rootVirtualClass).expandAll().rootTreeItem();
+            this.rootT = RootTreeItem.ofFileRef(rootVirtualClass).expandAll().rootTreeItem();
                         
             fileTreeView.setRoot(rootT);
             fileTreeView.setShowRoot(false);  
