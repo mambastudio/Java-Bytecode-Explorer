@@ -6,7 +6,11 @@ package com.mamba.bytecodeexplorer;
 
 import com.mamba.bytecodeexplorer.classanalysis.ClassAnalysis;
 import com.mamba.bytecodeexplorer.classanalysis.ConstantPoolInfo;
+import com.mamba.bytecodeexplorer.classanalysis.UtilBytecode;
 import java.util.Optional;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.control.Tab;
@@ -27,10 +31,11 @@ public class ClassViewer {
     private final CodeArea bytecodeArea;
     private final CodeArea constantpoolArea;
     
-    private ClassAnalysis ca;
+    private ObjectProperty<ClassAnalysis> ca = new SimpleObjectProperty();
 
-    public ClassViewer() {        
-        bytecodeArea = new CodeArea();
+    public ClassViewer() {       
+        bytecodeArea = new CodeArea(); 
+        bytecodeArea.setContentPadding(new Insets(3, 0, 0, 10));
         bytecodeArea.setFont(font);
         bytecodeArea.setEditable(false);
         bytecodeArea.setLineNumbersEnabled(true);
@@ -39,6 +44,7 @@ public class ClassViewer {
         stackByteCode.setPadding(new Insets(2));
         
         constantpoolArea = new CodeArea();
+        constantpoolArea.setContentPadding(new Insets(3, 0, 0, 10));
         constantpoolArea.setFont(font);
         constantpoolArea.setEditable(false);
         constantpoolArea.setLineNumbersEnabled(true);
@@ -59,14 +65,25 @@ public class ClassViewer {
         icon.setIconSize(16);
         
         tab = new Tab();
+        tab.textProperty().bind(
+            Bindings.createStringBinding(
+                () -> {
+                    return switch(ca.get()){
+                        case null -> "Untitled";
+                        case ClassAnalysis a -> UtilBytecode.toBinaryClassName(a.name()) + ".class";
+                    };
+                },
+                ca
+            )
+        );
         tab.setClosable(false);
         tab.setGraphic(icon);
-        tab.setContent(sideTabs);
+        tab.setContent(sideTabs);        
     }
 
     public void show(ClassAnalysis ca) {
-        this.ca = ca;        
-        tab.setText(ca.name());
+        this.ca.set(ca);
+        
         
         var cpis = ConstantPoolInfo.project(ca.classModel());
         var builder = new StringBuilder();
@@ -83,6 +100,6 @@ public class ClassViewer {
     }
     
     public Optional<ClassAnalysis> classAnalysis(){
-        return Optional.ofNullable(ca);
+        return Optional.ofNullable(ca.get());
     }
 }

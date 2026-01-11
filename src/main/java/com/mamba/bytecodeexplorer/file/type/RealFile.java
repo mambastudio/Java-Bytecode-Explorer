@@ -6,23 +6,9 @@ package com.mamba.bytecodeexplorer.file.type;
 
 import com.mamba.bytecodeexplorer.file.FileExtensions;
 import static com.mamba.bytecodeexplorer.file.type.FileRef.ExploreType.FILE_OR_FOLDER_EXPLORE;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import module java.base;
+import module java.logging;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 /**
  *

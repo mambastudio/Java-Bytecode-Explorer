@@ -20,6 +20,7 @@ import com.mamba.bytecodeexplorer.tree.item.FileRefTreeItem;
 import com.mamba.bytecodeexplorer.tree.item.RootTreeItem;
 import com.mamba.bytecodeexplorer.tree.model.ClassRefMeta;
 import com.mamba.bytecodeexplorer.tree.model.ClassRefModel;
+import com.mamba.mambaui.control.PlaceholderTreeView;
 import com.mamba.mambaui.modal.ModalDialogs.InformationDialog;
 import java.io.IOException;
 import java.net.URL;
@@ -37,7 +38,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TreeView;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
@@ -52,7 +52,7 @@ public class JavaBytecodeExplorerController implements Initializable {
     TabPane tabPaneView;
     
     @FXML
-    TreeView<ClassRefModel> fileTreeView;
+    PlaceholderTreeView<ClassRefModel> fileTreeView;
     
     @FXML
     StackPane root;
@@ -89,14 +89,22 @@ public class JavaBytecodeExplorerController implements Initializable {
         
         classAspectCombo.setItems(FXCollections.observableArrayList(ClassAspect.values()));
         classAspectCombo.getSelectionModel().select(ClassAspect.METHODS);
-        classAspectCombo.selectionModelProperty().addListener((o, ov, nv)->{
+        
+        classAspectCombo.valueProperty().addListener((o, ov, nv)->{
             if(!(currentAnalysisProperty.get() instanceof ClassAnalysis ca))
                 return;
             
-            switch(nv.getSelectedItem()){
+            switch(nv){
                 case METHODS -> {
-                    classAspectListView.setItems(FXCollections.observableArrayList(ca.getMethodNames()));
-                }                    
+                    var listMethods = ExecutableInfo.of(ca.classModel());
+                    var listMethodNames = new ArrayList<String>();
+
+                    for(ExecutableInfo info : listMethods)
+                        listMethodNames.add(info.formatExecutable());
+
+                    classAspectListView.setItems(FXCollections.observableArrayList(listMethodNames)); 
+                }
+                case FIELDS -> classAspectListView.setItems(FXCollections.observableArrayList(ca.fields()));                           
             }
         });
         
@@ -111,7 +119,8 @@ public class JavaBytecodeExplorerController implements Initializable {
                             listMethodNames.add(info.formatExecutable());
                         
                         classAspectListView.setItems(FXCollections.observableArrayList(listMethodNames));
-                    }                    
+                    } 
+                    case FIELDS -> classAspectListView.setItems(FXCollections.observableArrayList(ca.fields()));  
                 }
                 classViewer.show(ca); //where we display class bytecode
             }    
@@ -131,6 +140,7 @@ public class JavaBytecodeExplorerController implements Initializable {
                 }
             }
         });
+        fileTreeView.setPlaceholder(new Label("<No Class Loaded>"));
     }    
         
     public void open(ActionEvent e){

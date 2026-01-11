@@ -1,6 +1,9 @@
 com\mamba\bytecodeexplorer\file\TestFile.class
+com\mamba\bytecodeexplorer\codearea\CodeLauncher.class
+com\mamba\bytecodeexplorer\ModalLauncher.class
+com\mamba\bytecodeexplorer\codearea\decorator\TodoHighlighter.class
+com\mamba\bytecodeexplorer\filewatcher\ModelSearch.class
 com\mamba\bytecodeexplorer\ModalApplication.class
 com\mamba\bytecodeexplorer\TestClassFile.class
 com\mamba\bytecodeexplorer\filewatcher\TestModel.class
-com\mamba\bytecodeexplorer\ModalLauncher.class
-com\mamba\bytecodeexplorer\filewatcher\ModelSearch.class
+com\mamba\bytecodeexplorer\codearea\CodeApplication.class

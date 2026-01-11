@@ -37,6 +37,8 @@ public class ModalApplication extends Application{
         stage.setTitle("Close Button Viewer");
         stage.setScene(scene);
         stage.show(); 
+        
+        
     }
     
     public void dummyCall(){

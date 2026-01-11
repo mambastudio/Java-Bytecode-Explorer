@@ -10,8 +10,7 @@ package com.mamba.bytecodeexplorer.classanalysis;
  */
 public enum ClassAspect {
     METHODS("Methods"),
-    FIELDS("Fields"),
-    CONSTANT_POOL("Constant Pool");
+    FIELDS("Fields");
 
     private final String title;
 

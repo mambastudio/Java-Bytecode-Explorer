@@ -12,6 +12,7 @@ import com.mamba.bytecodeexplorer.tree.model.FileRefInfo;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -20,9 +21,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
@@ -101,9 +104,39 @@ public class FolderTreeDialogPane extends HBox {
                 setFolderExplore(nv);
         });
         
+        folderListView.setCellFactory(lv -> new ListCell<>() {
+
+            private final ContextMenu contextMenu = new ContextMenu();
+            private final MenuItem deleteItem = new MenuItem();
+            {
+                deleteItem.setOnAction(e ->{   
+                    folderListView.getItems().remove(getItem());
+                    setFolderExplore(null);    
+                });
+                contextMenu.getItems().add(deleteItem);
+            }
+
+            @Override
+            protected void updateItem(FileRef item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(null);
+                    setContextMenu(null);
+                } else {
+                    setText(item.toString());
+                    deleteItem.setText("Delete \"" + item + "\"");
+                    setContextMenu(contextMenu);
+                }
+            }
+        });
+
+        
         /****Folder explore treeview section****/
         folderExploreTreeView.setRoot(folderExploreRootItem);
         folderExploreTreeView.setShowRoot(false); 
+        
+        
         
         folderExploreTreeView.getSelectionModel().selectedItemProperty().addListener((o, ov, nv) ->{
             var v = Optional.<TreeItem<FileRefModel>>ofNullable(nv);
@@ -184,11 +217,19 @@ public class FolderTreeDialogPane extends HBox {
             }
     }
     
-    private void setFolderExplore(FileRef folder){        
-        var fileTreeModel = RootTreeItem.ofFileRef(new FileRefModel(folder, ".class"));
-        fileTreeModel.setExpanded(true);
-        folderExploreRootItem.getChildren().setAll(fileTreeModel.rootTreeItem());  
-        folderExploreRootProperty.set(folder);
+    private void setFolderExplore(FileRef folder){     
+        var folderOptional = Optional.ofNullable(folder);
+        if(folderOptional.isPresent()){
+            var fileTreeModel = RootTreeItem.ofFileRef(new FileRefModel(folder, ".class"));
+            fileTreeModel.setExpanded(true);
+            folderExploreRootItem.getChildren().setAll(fileTreeModel.rootTreeItem());  
+            folderExploreRootProperty.set(folder);
+        }
+        else{
+            folderExploreRootItem.getChildren().clear();
+            folderExploreRootProperty.set(null);
+            folderListView.getSelectionModel().clearSelection();
+        }
     }
     
     public void clearSelectedFolderInfo(){

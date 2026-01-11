@@ -4,13 +4,13 @@
  */
 package com.mamba.bytecodeexplorer.classanalysis;
 
-import com.mamba.bytecodeexplorer.file.type.RealFile;
 import java.io.IOException;
 import java.lang.classfile.Attributes;
 import java.lang.classfile.ClassFile;
 import java.lang.classfile.ClassModel;
 import java.lang.classfile.CodeElement;
 import java.lang.classfile.CodeModel;
+import java.lang.classfile.FieldModel;
 import java.lang.classfile.Instruction;
 import java.lang.classfile.Label;
 import java.lang.classfile.MethodModel;
@@ -19,6 +19,7 @@ import java.lang.classfile.instruction.ArrayLoadInstruction;
 import java.lang.classfile.instruction.ArrayStoreInstruction;
 import java.lang.classfile.instruction.BranchInstruction;
 import java.lang.classfile.instruction.ConstantInstruction;
+import java.lang.classfile.instruction.ConvertInstruction;
 import java.lang.classfile.instruction.FieldInstruction;
 import java.lang.classfile.instruction.IncrementInstruction;
 import java.lang.classfile.instruction.InvokeDynamicInstruction;
@@ -60,7 +61,7 @@ public class ClassAnalysis {
         return cm.thisClass().asInternalName();
     }
     
-    public List<String> getMethodSources(){
+    public List<String> methodSources(){
         var methods = cm.methods();
         var methodSources = new ArrayList<String>();
         for(MethodModel mm : methods){   
@@ -88,7 +89,7 @@ public class ClassAnalysis {
         return m.methodName().stringValue().equals("<init>");
     }
 
-    public List<String> getMethodNames(){
+    public List<String> methodNames(){
         var methods = cm.methods();
         var methodNames = new ArrayList<String>();
         for(MethodModel mm : methods){   
@@ -151,7 +152,7 @@ public class ClassAnalysis {
                     case ReturnInstruction ri -> builder.append(formatOpcodeLine(offset, opcodeStr, ri.typeKind().name().toLowerCase())).append("\n");
                     case BranchInstruction b -> builder.append(formatOpcodeLine(offset, opcodeStr, labelName(code, b.target()))).append("\n"); //Need proper display in future
                     case OperatorInstruction oi -> builder.append(formatOpcodeLine(offset, opcodeStr, oi.typeKind().name().toLowerCase())).append("\n");
-
+                    case ConvertInstruction ci -> builder.append(formatOpcodeLine(offset, opcodeStr, friendly(ci))).append("\n");
                     default -> builder.append(inst).append(inst.getClass().getName()).append("\n");
                 }
                 
@@ -162,11 +163,33 @@ public class ClassAnalysis {
         return builder.toString();
     }
     
+    private String friendly(ConvertInstruction ci){
+        var from = ci.fromType().name().toLowerCase();
+        var to = ci.toType().name().toLowerCase();
+        return String.format("convert: %s -> %s", from, to);
+    }
+    
     private String friendly(FieldInstruction fis){        
         return switch(fis.opcode().toString().toLowerCase()){
             case "putstatic", "getstatic", "putfield", "getfield" -> new FieldInfo(fis).toString();  
             default -> fis.toString();
         };
+    }
+    
+       
+    public List<String> fields(){
+        var fields = new ArrayList<String>();
+        for(FieldModel fm : cm.fields()){
+            fields.add(field(fm));
+        }
+        return fields;
+    }
+    
+    private String field(FieldModel fm){
+        return String.format("%s %s %s", 
+                String.join(" ", UtilBytecode.methodModifiers(fm.flags())),
+                UtilBytecode.toSimpleName(fm.fieldTypeSymbol().displayName()),
+                fm.fieldName());
     }
         
     private String formatOpcodeLine(int offset, String opcode, String info) {
