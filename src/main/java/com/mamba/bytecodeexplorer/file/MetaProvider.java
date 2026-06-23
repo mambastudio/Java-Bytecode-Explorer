@@ -4,7 +4,7 @@
  */
 package com.mamba.bytecodeexplorer.file;
 
-import com.mamba.bytecodeexplorer.file.FileRefWatcher.FileRefMeta;
+import com.mamba.bytecodeexplorer.file.FileMonitorService.FileRefMeta;
 import java.nio.file.Path;
 
 /**

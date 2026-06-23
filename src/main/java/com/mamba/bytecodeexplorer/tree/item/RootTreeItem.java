@@ -4,8 +4,8 @@
  */
 package com.mamba.bytecodeexplorer.tree.item;
 
-import com.mamba.bytecodeexplorer.core.FileRefTree;
-import com.mamba.bytecodeexplorer.core.Tree;
+import com.mamba.bytecodeexplorer.file.FileRefTree;
+import com.mamba.bytecodeexplorer.file.Tree;
 import com.mamba.bytecodeexplorer.file.type.RealFile;
 import java.util.Optional;
 import java.util.function.Function;

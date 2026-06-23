@@ -26,6 +26,7 @@ import java.lang.classfile.instruction.InvokeDynamicInstruction;
 import java.lang.classfile.instruction.InvokeInstruction;
 import java.lang.classfile.instruction.LoadInstruction;
 import java.lang.classfile.instruction.NewObjectInstruction;
+import java.lang.classfile.instruction.NewPrimitiveArrayInstruction;
 import java.lang.classfile.instruction.NewReferenceArrayInstruction;
 import java.lang.classfile.instruction.OperatorInstruction;
 import java.lang.classfile.instruction.ReturnInstruction;
@@ -48,9 +49,11 @@ import java.util.Optional;
  */
 public class ClassAnalysis {
     private final ClassModel cm;
+    private final Path path;
         
     public ClassAnalysis(Path path) throws IOException{
-        cm = ClassFile.of().parse(path);
+        this.cm = ClassFile.of().parse(path);
+        this.path = path;
     }
     
     public final ClassModel classModel(){
@@ -153,6 +156,7 @@ public class ClassAnalysis {
                     case BranchInstruction b -> builder.append(formatOpcodeLine(offset, opcodeStr, labelName(code, b.target()))).append("\n"); //Need proper display in future
                     case OperatorInstruction oi -> builder.append(formatOpcodeLine(offset, opcodeStr, oi.typeKind().name().toLowerCase())).append("\n");
                     case ConvertInstruction ci -> builder.append(formatOpcodeLine(offset, opcodeStr, friendly(ci))).append("\n");
+                    case NewPrimitiveArrayInstruction npai -> builder.append(formatOpcodeLine(offset, opcodeStr, npai.typeKind().name().toLowerCase())).append("\n");
                     default -> builder.append(inst).append(inst.getClass().getName()).append("\n");
                 }
                 
@@ -308,5 +312,9 @@ public class ClassAnalysis {
             "%s",
             type
         );
+    }
+    
+    public boolean isSame(Path path){
+        return this.path.equals(path);
     }
 }

@@ -16,4 +16,8 @@ module BytecodeExplorer {
     requires jfx.incubator.input;
     requires jfx.incubator.richtext;
     requires java.logging;
+    
+    exports com.mamba.bytecodeexplorer;
+    opens com.mamba.bytecodeexplorer to javafx.fxml;
+    opens com.mamba.bytecodeexplorer.dialog to javafx.fxml;
 }

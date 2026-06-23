@@ -15,6 +15,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import jfx.incubator.scene.control.richtext.CodeArea;
@@ -39,6 +40,21 @@ public class ClassViewer {
         bytecodeArea.setFont(font);
         bytecodeArea.setEditable(false);
         bytecodeArea.setLineNumbersEnabled(true);
+        bytecodeArea.addEventFilter(ScrollEvent.SCROLL, e -> {
+            if (e.isControlDown()) {
+                Font f = bytecodeArea.getFont();
+
+                double size = f.getSize();
+                size += e.getDeltaY() > 0 ? 1 : -1;
+                size = Math.max(8, Math.min(48, size));
+
+                bytecodeArea.setFont(Font.font(f.getFamily(), size));
+
+                e.consume();
+            }
+        });
+        
+        
         
         var stackByteCode = new StackPane(bytecodeArea);
         stackByteCode.setPadding(new Insets(2));
@@ -48,6 +64,20 @@ public class ClassViewer {
         constantpoolArea.setFont(font);
         constantpoolArea.setEditable(false);
         constantpoolArea.setLineNumbersEnabled(true);
+        
+        constantpoolArea.addEventFilter(ScrollEvent.SCROLL, e -> {
+            if (e.isControlDown()) {
+                Font f = constantpoolArea.getFont();
+
+                double size = f.getSize();
+                size += e.getDeltaY() > 0 ? 1 : -1;
+                size = Math.max(8, Math.min(48, size));
+
+                constantpoolArea.setFont(Font.font(f.getFamily(), size));
+
+                e.consume();
+            }
+        });
         
         var stackConstantPool = new StackPane(constantpoolArea);
         stackConstantPool.setPadding(new Insets(2));
@@ -93,6 +123,12 @@ public class ClassViewer {
              
         bytecodeArea.setText(ca.bytecodeString());
         constantpoolArea.setText(builder.toString().trim());
+    }
+
+    public void clear() {
+        ca.set(null);
+        bytecodeArea.setText("");
+        constantpoolArea.setText("");
     }
 
     public Tab tab() {

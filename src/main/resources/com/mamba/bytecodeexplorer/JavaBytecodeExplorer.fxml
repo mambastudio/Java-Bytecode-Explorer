@@ -26,6 +26,12 @@
                <children>
                   <MenuBar>
                     <menus>
+                      <Menu mnemonicParsing="false" text="Monitor">
+                        <items>
+                          <MenuItem mnemonicParsing="false" onAction="#stopWatching" text="Stop Watching" />
+                          <MenuItem mnemonicParsing="false" onAction="#release" text="Release Folder" />
+                        </items>
+                      </Menu>
                       <Menu mnemonicParsing="false" text="Help">
                         <items>
                           <MenuItem mnemonicParsing="false" onAction="#about" text="About" />
@@ -81,6 +87,14 @@
                      </tooltip>
                      <graphic>
                         <FontIcon iconLiteral="mdal-folder_open" />
+                     </graphic>
+                  </Button>
+                <Button mnemonicParsing="false" onAction="#release">
+                     <tooltip>
+                        <Tooltip text="release monitored folder" />
+                     </tooltip>
+                     <graphic>
+                        <FontIcon iconLiteral="mdal-close" />
                      </graphic>
                   </Button>
               </items>

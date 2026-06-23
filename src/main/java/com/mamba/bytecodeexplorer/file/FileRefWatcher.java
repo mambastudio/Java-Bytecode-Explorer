@@ -6,6 +6,7 @@ package com.mamba.bytecodeexplorer.file;
 
 import com.mamba.bytecodeexplorer.core.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.file.FileRefWatcher.FileEventListener.FileEvent;
+import com.mamba.bytecodeexplorer.file.FileMonitorService.FileRefMeta;
 import com.mamba.bytecodeexplorer.file.type.RealFile;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
@@ -32,13 +33,40 @@ import java.util.concurrent.TimeUnit;
  *
  * @author jmburu
  */
-public class FileRefWatcher {
+public class FileRefWatcher implements FileMonitorService {
     
     // ============================================================
     // Internal helper types (kept inside the same file for portability)
     // ============================================================
     
-    public interface FileRefMeta{}
+    public static final WatchOptions DEFAULT_OPTIONS = new WatchOptions(100, 1_000, 5_000);
+
+    public record WatchOptions(
+            long eventDelayMillis,
+            long recheckDelayMillis,
+            long maxRecheckDurationMillis) {
+
+        public WatchOptions {
+            if (eventDelayMillis < 0)
+                throw new IllegalArgumentException("eventDelayMillis must not be negative");
+            if (recheckDelayMillis < 0)
+                throw new IllegalArgumentException("recheckDelayMillis must not be negative");
+            if (maxRecheckDurationMillis < 0)
+                throw new IllegalArgumentException("maxRecheckDurationMillis must not be negative");
+        }
+
+        public WatchOptions withEventDelayMillis(long millis) {
+            return new WatchOptions(millis, recheckDelayMillis, maxRecheckDurationMillis);
+        }
+
+        public WatchOptions withRecheckDelayMillis(long millis) {
+            return new WatchOptions(eventDelayMillis, millis, maxRecheckDurationMillis);
+        }
+
+        public WatchOptions withMaxRecheckDurationMillis(long millis) {
+            return new WatchOptions(eventDelayMillis, recheckDelayMillis, millis);
+        }
+    }
 
     /**
      * Mutable state for an actively watched directory.
@@ -77,11 +105,14 @@ public class FileRefWatcher {
     private final Map<Path, InvalidationInfo> invalidations = new ConcurrentHashMap<>();
     private Thread thread;
     
-    private long delayTimeMilliseconds = 100;
-    private long recheckDelayMillis = 1_000; // 1 seconds
-    private long maxRecheckDurationMillis = 5_000; // 5 seconds total retry window
+    private volatile WatchOptions options;
     
     public FileRefWatcher(){
+        this(DEFAULT_OPTIONS);
+    }
+
+    public FileRefWatcher(WatchOptions options){
+        this.options = Objects.requireNonNull(options, "options must not be null");
         try {
             this.watcher = FileSystems.getDefault().newWatchService();
         } catch (IOException ex) {
@@ -117,6 +148,11 @@ public class FileRefWatcher {
     public int statesCountWatched(){
         return states.size();
     }
+
+    @Override
+    public int monitoredCount() {
+        return statesCountWatched();
+    }
     
     public void watch(Path dir, FileEventListener listener) {
         Objects.requireNonNull(dir, "dir must not be null");
@@ -146,6 +182,12 @@ public class FileRefWatcher {
             if(child instanceof AbstractFileRefTree<?> c)
                 watchTree(c, listener);    
     }    
+
+    @Override
+    public MonitorHandle monitorTree(AbstractFileRefTree<?> tree, FileEventListener listener) {
+        watchTree(tree, listener);
+        return () -> unwatchTree(tree);
+    }
 
     //if feListeners are empty, remove everything, otherwise, remove specified listeners
     public void unwatch(Path dir, FileEventListener... feListeners) {
@@ -202,8 +244,9 @@ public class FileRefWatcher {
                     for (WatchEvent<?> event : key.pollEvents()) {
                         FileEvent fe = toFileEvent(dir, event);
                         for (FileEventListener l : state.listeners) {
+                            WatchOptions currentOptions = options;
                             scheduler.schedule(() -> l.onEvent(fe),
-                                    delayTimeMilliseconds, TimeUnit.MILLISECONDS);
+                                    currentOptions.eventDelayMillis(), TimeUnit.MILLISECONDS);
                         }
                     }
                 }
@@ -226,15 +269,16 @@ public class FileRefWatcher {
 
             // notify listeners about invalidation
             for (FileEventListener l : state.listeners) {
+                WatchOptions currentOptions = options;
                 scheduler.schedule(
                         () -> l.onEvent(new FileEvent.KeyInvalid(dir)),
-                        delayTimeMilliseconds,
+                        currentOptions.eventDelayMillis(),
                         TimeUnit.MILLISECONDS);
             }
         }
 
         states.remove(dir);
-        scheduler.schedule(() -> revalidate(dir), recheckDelayMillis, TimeUnit.MILLISECONDS);
+        scheduler.schedule(() -> revalidate(dir), options.recheckDelayMillis(), TimeUnit.MILLISECONDS);
     }
     
     private void revalidate(Path dir) {
@@ -254,8 +298,9 @@ public class FileRefWatcher {
 
             FileEvent ev = new FileEvent.DirectoryRevalidated(dir);
             for (FileEventListener l : newState.listeners) {
+                WatchOptions currentOptions = options;
                 scheduler.schedule(() -> l.onEvent(ev),
-                        delayTimeMilliseconds, TimeUnit.MILLISECONDS);
+                        currentOptions.eventDelayMillis(), TimeUnit.MILLISECONDS);
             }
             
             return;
@@ -263,9 +308,10 @@ public class FileRefWatcher {
 
         // Directory still missing — retry within window
         long age = System.currentTimeMillis() - info.timestamp;
-        if (age < maxRecheckDurationMillis) {
+        WatchOptions currentOptions = options;
+        if (age < currentOptions.maxRecheckDurationMillis()) {
             scheduler.schedule(() -> revalidate(dir),
-                    recheckDelayMillis, TimeUnit.MILLISECONDS);
+                    currentOptions.recheckDelayMillis(), TimeUnit.MILLISECONDS);
         } else {
             invalidations.remove(dir);
         }
@@ -275,15 +321,23 @@ public class FileRefWatcher {
 
     
     public void setEventDelayedTo(long millis){
-        this.delayTimeMilliseconds = millis;
+        options = options.withEventDelayMillis(millis);
     }
     
     public void setRecheckDelay(long millis){
-        this.recheckDelayMillis = millis;
+        options = options.withRecheckDelayMillis(millis);
     }
     
     public void setMaxRecheckDuration(long millis) {
-        this.maxRecheckDurationMillis = millis;
+        options = options.withMaxRecheckDurationMillis(millis);
+    }
+
+    public WatchOptions options() {
+        return options;
+    }
+
+    public void setOptions(WatchOptions options) {
+        this.options = Objects.requireNonNull(options, "options must not be null");
     }
     
     @SuppressWarnings("unchecked")

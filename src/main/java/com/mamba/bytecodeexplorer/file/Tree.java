@@ -1,42 +1,31 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
-package com.mamba.bytecodeexplorer.core;
+package com.mamba.bytecodeexplorer.file;
 
-import java.util.Optional;
 import javafx.collections.ObservableList;
 
-/**
- *
- * @author user
- * @param <X>
- * @param <Y>
- */
 public interface Tree<X, Y extends Tree<X,Y>> {
-    X ref(); //TODO: Optional<X>
-    ObservableList<Y> children();   
-        
-    default TreeRelation<X, Y> findInTree(Y y){      
+    X ref();
+    ObservableList<Y> children();
+
+    default TreeRelation<X, Y> findInTree(Y y){
         return findInTree(y.ref());
     }
-    
+
     default TreeRelation<X, Y> findInTree(X x){
         return null;
     }
-    
-    default boolean remove(X x) {        
+
+    default boolean remove(X x) {
         return false;
-    }   
-    
+    }
+
     default boolean remove(Y y){
         return children().remove(y);
     }
-    
+
     default boolean childrenContain(Y child){
         return children().contains(child);
     }
-    
+
     default boolean childrenContain(X child){
         for(Y y : children()){
             if(y.ref().equals(child))
@@ -44,7 +33,7 @@ public interface Tree<X, Y extends Tree<X,Y>> {
         }
         return false;
     }
-    
+
     default boolean removeChild(X child){
         int index = -1;
         for(int i = 0; i<children().size(); i++)
@@ -60,19 +49,18 @@ public interface Tree<X, Y extends Tree<X,Y>> {
             default -> false;
         };
     }
-    
+
     default boolean exist(Y y){
         var result = findInTree(y);
         return result.isPresent();
     }
+
     default boolean exist(X x){
         var result = findInTree(x);
         return result.isPresent();
     }
-    
+
     default boolean hasChildren(){
         return !children().isEmpty();
     }
-    
-    
 }

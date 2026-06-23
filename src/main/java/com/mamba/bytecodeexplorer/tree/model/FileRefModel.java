@@ -1,6 +1,6 @@
 package com.mamba.bytecodeexplorer.tree.model;
 
-import com.mamba.bytecodeexplorer.core.AbstractFileRefTree;
+import com.mamba.bytecodeexplorer.file.AbstractFileRefTree;
 import com.mamba.bytecodeexplorer.file.FileExtensions;
 import com.mamba.bytecodeexplorer.file.type.FileRef;
 import com.mamba.bytecodeexplorer.file.type.RealFile;

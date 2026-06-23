@@ -12,7 +12,7 @@ import com.mamba.bytecodeexplorer.classanalysis.ClassAspect;
 import com.mamba.bytecodeexplorer.classanalysis.ExecutableInfo;
 import com.mamba.bytecodeexplorer.dialog.FolderTreeDialog;
 import com.mamba.bytecodeexplorer.dialog.FolderTreePair;
-import com.mamba.bytecodeexplorer.file.FileRefWatcher;
+import com.mamba.bytecodeexplorer.file.FileMonitorService;
 import com.mamba.bytecodeexplorer.file.FileRefWatcher.FileEventListener.FileEvent.*;
 import com.mamba.bytecodeexplorer.file.type.FileRef;
 import com.mamba.bytecodeexplorer.file.type.RealFile;
@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -67,11 +68,17 @@ public class JavaBytecodeExplorerController implements Initializable {
         
     ObjectProperty<ClassAnalysis> currentAnalysisProperty = new SimpleObjectProperty();
     
-    FileRefWatcher watcher = new FileRefWatcher();
+    FileMonitorService monitor;
+    FileMonitorService.MonitorHandle monitorHandle;
     FolderTreeDialog folderTreeDialog = new FolderTreeDialog();
     InformationDialog aboutDialog = new InformationDialog("Java bytecode viewer to assess code ops realtime");
     
     ClassViewer classViewer = new ClassViewer();
+    FolderTreePair currentFolderTreePair;
+
+    public void setFileMonitorService(FileMonitorService monitor) {
+        this.monitor = monitor;
+    }
     
     /**
      * Initializes the controller class.
@@ -109,6 +116,12 @@ public class JavaBytecodeExplorerController implements Initializable {
         });
         
         currentAnalysisProperty.addListener((o, ov, nv) -> {
+            if (nv == null) {
+                classAspectListView.setItems(FXCollections.observableArrayList());
+                classViewer.clear();
+                return;
+            }
+            
             if(nv instanceof ClassAnalysis ca){
                 switch(classAspectCombo.getValue()){
                     case METHODS -> {
@@ -151,6 +164,41 @@ public class JavaBytecodeExplorerController implements Initializable {
             () -> IO.println("No result"));
         });          
     }    
+
+    public void release(ActionEvent e) {
+        releaseMonitoredFolder();
+    }
+
+    public void stopWatching(ActionEvent e) {
+        stopMonitoringCurrentTree();
+    }
+
+    private void stopMonitoringCurrentTree() {
+        if(monitorHandle != null) {
+            monitorHandle.stop();
+            monitorHandle = null;
+        }
+
+        if(monitor != null) {
+            monitor.metaMap().clear();
+            IO.println("Stopped monitoring folders. Monitored folders: " + monitor.monitoredCount());
+        }
+    }
+
+    public void releaseMonitoredFolder() {
+        stopMonitoringCurrentTree();
+        rootT = null;
+        currentFolderTreePair = null;
+
+        fileTreeView.setRoot(null);
+        fileTreeView.getSelectionModel().clearSelection();
+        currentAnalysisProperty.set(null);
+        IO.println("Released monitored folder. Monitored folders: " + monitor.monitoredCount());
+    }
+
+    public void closeWatcher() {
+        releaseMonitoredFolder();
+    }
     
     //Update UI tree for classes files
     private void setTreeItem(FolderTreePair f){
@@ -158,9 +206,10 @@ public class JavaBytecodeExplorerController implements Initializable {
             
             //remove file watcher from current model
             if(rootT != null){
-                watcher.unwatchTree(rootT.getValue());
-                IO.println("Are there folders being monitored: " +watcher.statesCountWatched());
+                stopMonitoringCurrentTree();
+                IO.println("Are there folders being monitored: " +monitor.monitoredCount());
             }
+            currentFolderTreePair = f;
             
             var rootVirtualClass = new ClassRefModel();
             
@@ -176,8 +225,10 @@ public class JavaBytecodeExplorerController implements Initializable {
             
             
             
-            //TODO: Replace with FileRefWatcher2, since we aren't doing recursive monitoring automatically (hierarchy folders might not be direct children)
-            watcher.watchTree(rootVirtualClass, e->{
+            if(monitor == null)
+                throw new IllegalStateException("File monitor service has not been set");
+
+            monitorHandle = monitor.monitorTree(rootVirtualClass, e -> Platform.runLater(() -> {
                 switch(e){
                     case Created(var parent, var child) -> {
                         var pi = new RealFile(parent);   
@@ -199,19 +250,29 @@ public class JavaBytecodeExplorerController implements Initializable {
                             parentPresent.tree().removeChild(fi);
                         }
                     }
-                    case Modified(var _, var _) -> {}
+                    case Modified(var _, var child) -> {
+                        if(currentAnalysisProperty.get() instanceof ClassAnalysis ca){
+                            if(ca.isSame(child)){
+                                try {
+                                    currentAnalysisProperty.set(new ClassAnalysis(child));
+                                } catch (IOException _) {
+                                    System.getLogger(JavaBytecodeExplorerController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                                }
+                            }
+                        }
+                    }
                     case Overflow(var _) -> {}
                     case KeyInvalid(var parent) -> {
                         var fi = new RealFile(parent);                          
                         var result = rootVirtualClass.findInTree(fi);                          
                         if(result.isPresent()){ 
                             var item = rootT.find(new ClassRefModel(fi, false)); 
-                            watcher.metaMap().put(parent, new ClassRefMeta(result.parent(), fi, item.get().isExpanded(), result.tree().classChildrenIntended()));
+                            monitor.metaMap().put(parent, new ClassRefMeta(result.parent(), fi, item.get().isExpanded(), result.tree().classChildrenIntended()));
                             rootVirtualClass.remove(fi);
                         }
                     }
                     case DirectoryRevalidated(var parent) -> {
-                        var uiMeta = watcher.metaMap().get(parent);                         
+                        var uiMeta = monitor.metaMap().get(parent);                         
                         if(uiMeta instanceof ClassRefMeta(var pi, var fi, var _, var classChildrenIntended)){ 
                             var a = new ClassRefModel(fi, classChildrenIntended); 
                             var p = rootVirtualClass.findInTree(pi);                            
@@ -221,11 +282,11 @@ public class JavaBytecodeExplorerController implements Initializable {
                             var ti = treeItemOpt.get();                            
                             ti.setExpanded(true);                    
                             
-                            watcher.metaMap().remove(parent);
+                            monitor.metaMap().remove(parent);
                         }
                     }
                 }
-            });
+            }));
             
             this.rootT = RootTreeItem.ofFileRef(rootVirtualClass).expandAll().rootTreeItem();
                         
@@ -233,7 +294,7 @@ public class JavaBytecodeExplorerController implements Initializable {
             fileTreeView.setShowRoot(false);  
         }
     }
-    
+
     public void about(ActionEvent e){
         aboutDialog.showAndWait(result -> {});
     }    
